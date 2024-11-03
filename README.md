@@ -5,6 +5,7 @@ Spring Boot: Java 17
 Python: 3.12.6150 
 
 HDSD: 
+
 B1: Nếu sử dụng Xampp thì bật mysql 
 
 B2: Chạy server Spring Boot 
