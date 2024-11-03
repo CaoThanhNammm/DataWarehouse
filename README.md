@@ -1,7 +1,11 @@
 Data Warehouse: lấy giá xe đạp 
 
-Config: DB: mysql(Ver 15.1 Distrib 10.4.32-MariaDB) 
+Config: 
+
+DB: mysql(Ver 15.1 Distrib 10.4.32-MariaDB) 
+
 Spring Boot: Java 17 
+
 Python: 3.12.6150 
 
 HDSD: 
