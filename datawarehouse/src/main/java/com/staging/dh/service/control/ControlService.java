@@ -1,6 +1,6 @@
 package com.staging.dh.service.control;
 
-import com.staging.dh.model.control.Control;
+import com.staging.dh.model.control.Config;
 import com.staging.dh.repository.control.ControlRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,23 +12,23 @@ public class ControlService implements IControllerService {
 
 
     @Override
-    public void add(Control control) {
-        control.setKeyword(control.getKeyword().trim());
-        if(!dao.existsByKeyword(control.getKeyword())){
-            dao.save(control);
+    public void add(Config config) {
+        config.setKeyword(config.getKeyword().trim());
+        if(!dao.existsByKeyword(config.getKeyword())){
+            dao.save(config);
         }
     }
 
     @Override
-    public Control increaseScrapeTimes(int id) {
-        Control control = dao.findById(id).orElseThrow();
-        control.setScrapeTimes(control.getScrapeTimes() + 1);
-        dao.save(control);
-        return control;
+    public Config increaseScrapeTimes(int id) {
+        Config config = dao.findById(id).orElseThrow();
+        config.setScrapeTimes(config.getScrapeTimes() + 1);
+        dao.save(config);
+        return config;
     }
 
     @Override
-    public Control getIdByKeyword(String keyword) {
+    public Config getIdByKeyword(String keyword) {
         return dao.findByKeyword(keyword);
     }
 }

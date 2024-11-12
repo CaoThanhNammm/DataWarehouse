@@ -36,6 +36,9 @@ def get_context_status():
 def get_context_bike():
   return get_var_in_env('context', 'url_bike')
 
+def get_context_dateDim():
+  return get_var_in_env('context', 'url_dateDim')
+
 def get_keyword_bike2school():
   return get_var_in_env('keyword', 'bike2school')
 

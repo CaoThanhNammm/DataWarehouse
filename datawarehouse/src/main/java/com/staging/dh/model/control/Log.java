@@ -19,7 +19,7 @@ public class Log {
 
     @ManyToOne
     @JoinColumn(name = "websiteId")
-    private Control websiteId;
+    private Config websiteId;
 
     @Column()
     private String message;
@@ -36,4 +36,8 @@ public class Log {
     @ManyToOne
     @JoinColumn(name = "statusId")
     private Status status;
+
+    @ManyToOne
+    @JoinColumn(name = "dateSk")
+    private DateDim dateSk;
 }

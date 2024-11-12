@@ -5,7 +5,7 @@ from selenium.webdriver.common.by import By
 import pandas as pd
 import API
 import general
-from controller.control import logController, statusController
+from controller.control import logController, statusController, dateDimController
 from controller.control import controlController
 from controller.staging import bikeController
 
@@ -87,9 +87,9 @@ def get_data_detail_xedapgiakho(hrefs):
       except:
         price = ""
 
-      size = ''
-      brand = ''
-      status = ''
+      size = 'N/A'
+      brand = 'N/A'
+      status = 'N/A'
 
       try:
         div_more = driver.find_element(By.CLASS_NAME, 'pum-trigger')
@@ -183,9 +183,16 @@ def get_data_detail_xedapgiakho(hrefs):
 # tác dụng: phối hợp lại tất cả các method lại tạo ra 1 method hoàn chỉnh để lấy dữ liệu
 # return: danh sách từng sản phẩm, lưu bằng DataFrame
 def general_xedapgiakho(url):
+
   # thêm log bắt đầu lấy dữ liệu------------------------------------------------------------------------------
   website = controlController.getIdByKeyword(f"{API.get_context_control()}/get", "xedapgiakho")
   id_website = website["id"]
+
+  # lấy ra id của datedim hôm nay
+  dateDimJson = {
+    "fullDate": general.get_local_date()
+  }
+  dateSk = dateDimController.getIdToday(f"{API.get_context_dateDim()}/id", dateDimJson)
 
   logJson = {
     "message": API.get_message("startMessage"),
@@ -197,7 +204,8 @@ def general_xedapgiakho(url):
     'status': {
       "id":
         statusController.getStatusByName(f"{API.get_context_status()}/getStatusByName", API.get_type_running())["id"]
-    }
+    },
+    'dateSk': dateSk
   }
 
   logController.add(f"{API.get_context_log()}/add", logJson)

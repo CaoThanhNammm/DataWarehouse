@@ -1,7 +1,7 @@
 # ĐÂY LÀ LỚP LẤY RA CÁC HẰNG SỐ LIÊN QUAN ĐẾN CHUNG CHUNG, CẤU HÌNH VÀ CÁC METHOD CHUNG
 
 from selenium import webdriver
-from datetime import datetime
+from datetime import datetime, date
 import configparser
 
 def config():
@@ -22,6 +22,10 @@ def get_var_in_env(parent, child):
 
 def get_local_date_time():
   now = datetime.now()
+  return now.isoformat()
+
+def get_local_date():
+  now = date.today()
   return now.isoformat()
 
 def split_array_into_three(arr):

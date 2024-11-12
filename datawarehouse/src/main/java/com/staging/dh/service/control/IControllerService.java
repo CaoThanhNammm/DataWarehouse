@@ -1,10 +1,10 @@
 package com.staging.dh.service.control;
 
-import com.staging.dh.model.control.Control;
+import com.staging.dh.model.control.Config;
 
 public interface IControllerService {
-    void add(Control control);
-    Control increaseScrapeTimes(int id);
-    Control getIdByKeyword(String website);
+    void add(Config config);
+    Config increaseScrapeTimes(int id);
+    Config getIdByKeyword(String website);
 
 }

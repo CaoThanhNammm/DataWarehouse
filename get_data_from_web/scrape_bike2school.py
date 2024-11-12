@@ -5,7 +5,7 @@ from selenium.webdriver.common.by import By
 import pandas as pd
 import API
 import general
-from controller.control import controlController, logController, statusController
+from controller.control import controlController, logController, statusController, dateDimController
 from controller.staging import bikeController
 
 
@@ -80,9 +80,9 @@ def get_data_detail_bike2school(hrefs):
 
         timeStartScrape = general.get_local_date_time()
         id = '-1'
-        brand = ''
-        color = ''
-        size = ''
+        brand = 'N/A'
+        color = 'N/A'
+        size = 'N/A'
         time.sleep(1)
         try:
             div_des = driver.find_element(By.CLASS_NAME, "ba-text-fpt")
@@ -98,7 +98,7 @@ def get_data_detail_bike2school(hrefs):
         try:
           name = driver.find_element(By.CLASS_NAME, 'title-head').text
         except:
-          name = ''
+          name = 'N/A'
 
         try:
             colors = driver.find_elements(By.CLASS_NAME, 'swatch-element.color')
@@ -114,12 +114,12 @@ def get_data_detail_bike2school(hrefs):
                         try:
                             price = driver.find_element(By.CLASS_NAME, 'product-price-old').text
                         except:
-                            price = ''
+                            price = 'N/A'
 
                         try:
                             price_sale = driver.find_element(By.CLASS_NAME, 'product-price').text
                         except:
-                            price_sale = ''
+                            price_sale = 'N/A'
 
                         timeEndScrape = general.get_local_date_time()
                         bikeJson = {
@@ -146,12 +146,12 @@ def get_data_detail_bike2school(hrefs):
                     try:
                         price = driver.find_element(By.CLASS_NAME, 'product-price-old').text
                     except:
-                        price = ''
+                        price = 'N/A'
 
                     try:
                         price_sale = driver.find_element(By.CLASS_NAME, 'product-price').text
                     except:
-                        price_sale = ''
+                        price_sale = 'N/A'
 
                     timeEndScrape = general.get_local_date_time()
                     bikeJson = {
@@ -178,12 +178,12 @@ def get_data_detail_bike2school(hrefs):
                     try:
                         price = driver.find_element(By.CLASS_NAME, 'product-price-old').text
                     except:
-                        price = ''
+                        price = 'N/A'
 
                     try:
                         price_sale = driver.find_element(By.CLASS_NAME, 'product-price').text
                     except:
-                        price_sale = ''
+                        price_sale = 'N/A'
 
                     timeEndScrape = general.get_local_date_time()
                     bikeJson = {
@@ -208,12 +208,12 @@ def get_data_detail_bike2school(hrefs):
                 try:
                     price = driver.find_element(By.CLASS_NAME, 'product-price-old').text
                 except:
-                    price = ''
+                    price = 'N/A'
 
                 try:
                     price_sale = driver.find_element(By.CLASS_NAME, 'product-price').text
                 except:
-                    price_sale = ''
+                    price_sale = 'N/A'
 
                 timeEndScrape = general.get_local_date_time()
                 bikeJson = {
@@ -245,6 +245,12 @@ def general_bike2school(url):
     website = controlController.getIdByKeyword(f"{API.get_context_control()}/get", API.get_keyword_bike2school())
     id_website = website["id"]
 
+    # lấy ra id của datedim hôm nay
+    dateDimJson = {
+        "fullDate": general.get_local_date()
+    }
+    dateSk = dateDimController.getIdToday(f"{API.get_context_dateDim()}/id", dateDimJson)
+
     logJson = {
         "message": API.get_message("startMessage"),
         "quantity": 0,
@@ -255,7 +261,8 @@ def general_bike2school(url):
         'status': {
             "id":
                 statusController.getStatusByName(f"{API.get_context_status()}/getStatusByName", API.get_type_running())["id"]
-        }
+        },
+        'dateSk': dateSk
     }
 
     logController.add(f"{API.get_context_log()}/add", logJson)
@@ -301,6 +308,10 @@ def general_bike2school(url):
     return data
 
 # ---------------------------------------------------------------------------------------------------------------------------------------------
-url = "https://bike2school.vn"
-website = controlController.getIdByKeyword(f'{API.get_context_control()}/get', API.get_keyword_bike2school())['website']
-general_bike2school(url)
+# url = "https://bike2school.vn"
+# website = controlController.getIdByKeyword(f'{API.get_context_control()}/get', API.get_keyword_bike2school())['website']
+# general_bike2school(url)
+
+print({"fullDate": general.get_local_date()})
+print(f"{API.get_context_dateDim()}/id")
+print(dateDimController.getIdToday(f"{API.get_context_dateDim()}/id", {"fullDate": general.get_local_date()}))

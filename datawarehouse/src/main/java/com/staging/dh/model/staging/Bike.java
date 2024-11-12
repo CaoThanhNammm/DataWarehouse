@@ -1,5 +1,6 @@
 package com.staging.dh.model.staging;
 
+import com.staging.dh.model.control.DateDim;
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -48,6 +49,7 @@ public class Bike {
     private LocalDateTime  timeEndScrape;
     @Column
     private LocalDateTime timeStartInsert;
+
 
     @PrePersist
     public void prePersist() {
