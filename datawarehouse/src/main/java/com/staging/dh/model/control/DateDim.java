@@ -1,9 +1,6 @@
 package com.staging.dh.model.control;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 
 import java.time.LocalDate;
@@ -20,8 +17,9 @@ public class DateDim {
     private LocalDate fullDate;
     @Column
     private int daySince2005;
-    @Column
-    private int monthSince2005;
+    @ManyToOne
+    @JoinColumn(name = "monthSk")
+    private MonthDim monthSince2005;
     @Column
     private String dayOfWeek;
     @Column
