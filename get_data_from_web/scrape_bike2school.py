@@ -5,8 +5,8 @@ from selenium.webdriver.common.by import By
 import pandas as pd
 import API
 import general
-from controller.control import controlController, logController, statusController, dateDimController
-from controller.staging import bikeController
+from controller.control import ConfigController, LogController, StatusController, DateDimController
+from controller.staging import BikeController
 
 
 # tham số: đường dẫn của trang web bike2school
@@ -32,9 +32,8 @@ def get_page_of_bike(url):
 def create_url_bike2school(pages, collection_num):
     i = 0
     urls = []
-
+    driver = general.config()
     for page in pages:
-        driver = general.config()
         print(page)
         driver.get(page)
 
@@ -48,6 +47,8 @@ def create_url_bike2school(pages, collection_num):
             urls.append(page)
 
         i = i + 1
+
+    driver.quit()
     return urls
 
 # tham số: danh sách đường dẫn của từng trang của tất cả các loại xe đạp
@@ -55,27 +56,28 @@ def create_url_bike2school(pages, collection_num):
 # return: danh sách đường dẫn của từng sản phẩm trong tất cả các trang
 def get_hrefs_bike2school(urls):
     hrefs = []
+    driver = general.config()
     for url in urls:
-        driver = general.config()
         print(url)
         driver.get(url)
 
         div_a = driver.find_elements(By.CLASS_NAME, 'news-item-products')
         for a in div_a:
-            time.sleep(1)
             hrefs.append(a.find_element(By.CSS_SELECTOR, 'a').get_attribute("href"))
+
+    driver.quit()
     return hrefs
 
 # tham số: danh sách đường dẫn của từng sản phẩm trong tất cả các trang
 # tác dụng: lặp qua từng sản phẩm và lấy ra các thông tin như name, price, ...
 # return: danh sách từng sản phẩm, lưu bằng DataFrame
 def get_data_detail_bike2school(hrefs):
+    driver = general.config()
     data = pd.DataFrame(
         columns=[
-            'id', 'name', 'price', 'priceSale', 'brand', 'color', 'size', 'description', 'status', 'timeStartScrape', 'timeEndScrape'
+            'id', 'name', 'price', 'priceSale', 'brand', 'color', 'size', 'description_part1', 'description_part2', 'description_part3', 'status', 'timeStartScrape', 'timeEndScrape'
         ])
     for href in hrefs:
-        driver = general.config()
         driver.get(href)
 
         timeStartScrape = general.get_local_date_time()
@@ -83,7 +85,7 @@ def get_data_detail_bike2school(hrefs):
         brand = 'N/A'
         color = 'N/A'
         size = 'N/A'
-        time.sleep(1)
+
         try:
             div_des = driver.find_element(By.CLASS_NAME, "ba-text-fpt")
         except:
@@ -92,8 +94,10 @@ def get_data_detail_bike2school(hrefs):
         try:
             ul = div_des.find_element(By.XPATH, '/html/body/section[2]/div/div[1]/div/div[5]/div/div[2]/div[1]/div[1]/ul')
             description = ul.text
+
+            description_part1, description_part2, description_part3 = general.split_array_into_three(description)
         except:
-            description = ""
+            description_part1, description_part2, description_part3 = "N/A"
 
         try:
           name = driver.find_element(By.CLASS_NAME, 'title-head').text
@@ -103,7 +107,6 @@ def get_data_detail_bike2school(hrefs):
         try:
             colors = driver.find_elements(By.CLASS_NAME, 'swatch-element.color')
             sizes = driver.find_elements(By.CLASS_NAME, 'swatch-element:not(.color)')
-            print(len(colors), len(sizes))
             if colors and sizes:
                 for color in colors:
                     color.click()
@@ -130,15 +133,17 @@ def get_data_detail_bike2school(hrefs):
                             "brand": brand,
                             "color": color.text,
                             "size": size.text,
-                            "description_part1": description,
+                            "description_part1": description_part1,
+                            "description_part2": description_part2,
+                            "description_part3": description_part3,
                             "timeStartScrape": timeStartScrape,
                             "timeEndScrape": timeEndScrape,
                             "status": status
                         }
-                        data.loc[len(data)] = [id, name, price, price_sale, brand, color.text, size.text, description, status,
-                                               timeStartScrape,
-                                               timeEndScrape]
-                        bikeController.add(API.get_context_bike() + "/add", bikeJson)
+                        data.loc[len(data)] = [id, name, price, price_sale, brand, color.text, size.text,
+                                               description_part1, description_part2, description_part3,
+                                               status, timeStartScrape, timeEndScrape]
+                        BikeController.add(API.get_context_bike() + "/add", bikeJson)
             elif colors:
                 for color in colors:
                     color.click()
@@ -162,15 +167,17 @@ def get_data_detail_bike2school(hrefs):
                         "brand": brand,
                         "color": color.text,
                         "size": size,
-                        "description_part1": description,
+                        "description_part1": description_part1,
+                        "description_part2": description_part2,
+                        "description_part3": description_part3,
                         "timeStartScrape": timeStartScrape,
                         "timeEndScrape": timeEndScrape,
                         "status": status
                     }
-                    data.loc[len(data)] = [id, name, price, price_sale, brand, color.text, size, description, status,
-                                           timeStartScrape,
-                                           timeEndScrape]
-                    bikeController.add(API.get_context_bike() + "/add", bikeJson)
+                    data.loc[len(data)] = [id, name, price, price_sale, brand, color.text, size,
+                                           description_part1, description_part2, description_part3,
+                                           status, timeStartScrape, timeEndScrape]
+                    BikeController.add(API.get_context_bike() + "/add", bikeJson)
             elif sizes:
                 for size in sizes:
                     size.click()
@@ -194,15 +201,17 @@ def get_data_detail_bike2school(hrefs):
                         "brand": brand,
                         "color": color,
                         "size": size.text,
-                        "description_part1": description,
+                        "description_part1": description_part1,
+                        "description_part2": description_part2,
+                        "description_part3": description_part3,
                         "timeStartScrape": timeStartScrape,
                         "timeEndScrape": timeEndScrape,
                         "status": status
                     }
-                    data.loc[len(data)] = [id, name, price, price_sale, brand, color, size.text, description, status,
-                                           timeStartScrape,
-                                           timeEndScrape]
-                    bikeController.add(API.get_context_bike() + "/add", bikeJson)
+                    data.loc[len(data)] = [id, name, price, price_sale, brand, color, size.text,
+                                           description_part1, description_part2, description_part3,
+                                           status, timeStartScrape, timeEndScrape]
+                    BikeController.add(API.get_context_bike() + "/add", bikeJson)
             else:
                 status = driver.find_element(By.CLASS_NAME, 'a-stock').text
                 try:
@@ -224,17 +233,21 @@ def get_data_detail_bike2school(hrefs):
                     "brand": brand,
                     "color": color,
                     "size": size,
-                    "description_part1": description,
+                    "description_part1": description_part1,
+                    "description_part2": description_part2,
+                    "description_part3": description_part3,
                     "timeStartScrape": timeStartScrape,
                     "timeEndScrape": timeEndScrape,
                     "status": status
                 }
                 print("đang lấy dữ liệu...")
-                data.loc[len(data)] = [id, name, price, price_sale, brand, color, size, description, status, timeStartScrape,
-                                       timeEndScrape]
-                bikeController.add(API.get_context_bike() + "/add", bikeJson)
+                data.loc[len(data)] = [id, name, price, price_sale, brand, color, size,
+                                       description_part1, description_part2, description_part3,
+                                       status, timeStartScrape, timeEndScrape]
+                BikeController.add(API.get_context_bike() + "/add", bikeJson)
         except:
             continue
+    driver.quit()
     return data
 
 # tham số: đường dẫn của trang web xedapgiakho
@@ -242,14 +255,14 @@ def get_data_detail_bike2school(hrefs):
 # return: danh sách từng sản phẩm, lưu bằng DataFrame
 def general_bike2school(url):
     # thêm log bắt đầu lấy dữ liệu------------------------------------------------------------------------------------
-    website = controlController.getIdByKeyword(f"{API.get_context_control()}/get", API.get_keyword_bike2school())
+    website = ConfigController.getIdByKeyword(f"{API.get_context_config()}/get", API.get_keyword_bike2school())
     id_website = website["id"]
 
     # lấy ra id của datedim hôm nay
     dateDimJson = {
         "fullDate": general.get_local_date()
     }
-    dateSk = dateDimController.getIdToday(f"{API.get_context_dateDim()}/id", dateDimJson)
+    dateSk = DateDimController.getIdToday(f"{API.get_context_dateDim()}/id", dateDimJson)
 
     logJson = {
         "message": API.get_message("startMessage"),
@@ -260,13 +273,15 @@ def general_bike2school(url):
         },
         'status': {
             "id":
-                statusController.getStatusByName(f"{API.get_context_status()}/getStatusByName", API.get_type_running())["id"]
+                StatusController.getStatusByName(f"{API.get_context_status()}/getStatusByName", API.get_type_running())["id"]
         },
-        'dateSk': dateSk
+        'dateSk':{
+            'dateSk': dateSk
+        }
     }
 
-    logController.add(f"{API.get_context_log()}/add", logJson)
-    controlController.inscreaseScrapeTimes(f"{API.get_context_control()}/increase", id_website)
+    LogController.add(f"{API.get_context_log()}/add", logJson)
+    ConfigController.inscreaseScrapeTimes(f"{API.get_context_config()}/increase", id_website)
 
     # bắt đầu lấy dữ liệu------------------------------------------------------------------------------
     collection_num = ['2432193', '2444695', '2444694', '', '2588496', '3221513', '2727345', '2719186', '3175753']
@@ -278,7 +293,7 @@ def general_bike2school(url):
     hrefs = get_hrefs_bike2school(pages)
     data = get_data_detail_bike2school(hrefs)
 
-    website = controlController.getIdByKeyword(f"{API.get_context_control()}/get", API.get_keyword_bike2school())
+    website = ConfigController.getIdByKeyword(f"{API.get_context_config()}/get", API.get_keyword_bike2school())
     save_folder = website["saveFolder"]
     general.to_excel(data, save_folder)
 
@@ -289,7 +304,7 @@ def general_bike2school(url):
     if data.shape[0] > 0:
         # thêm log complete
         logJson['status'] = {
-            "id": statusController.getStatusByName(f"{API.get_context_status()}/getStatusByName", API.get_type_complete())['id']
+            "id": StatusController.getStatusByName(f"{API.get_context_status()}/getStatusByName", API.get_type_complete())['id']
         }
         logJson['timeEnd'] = timeEnd
         logJson['quantity'] = data.shape[0]
@@ -298,20 +313,15 @@ def general_bike2school(url):
         # thêm log failed
         logJson['status'] = {
             "id":
-                statusController.getStatusByName(f"{API.get_context_status()}/getStatusByName", API.get_type_failed())['id']
+                StatusController.getStatusByName(f"{API.get_context_status()}/getStatusByName", API.get_type_failed())['id']
         }
         logJson['timeEnd'] = timeEnd
         logJson["message"] = API.get_message("failedMessage")
 
-    logController.add(f"{API.get_context_log()}/add", logJson)
+    LogController.add(f"{API.get_context_log()}/add", logJson)
 
     return data
 
 # ---------------------------------------------------------------------------------------------------------------------------------------------
-# url = "https://bike2school.vn"
-# website = controlController.getIdByKeyword(f'{API.get_context_control()}/get', API.get_keyword_bike2school())['website']
-# general_bike2school(url)
-
-print({"fullDate": general.get_local_date()})
-print(f"{API.get_context_dateDim()}/id")
-print(dateDimController.getIdToday(f"{API.get_context_dateDim()}/id", {"fullDate": general.get_local_date()}))
+website = ConfigController.getIdByKeyword(f'{API.get_context_config()}/get', API.get_keyword_bike2school())['website']
+general_bike2school(website)

@@ -16,8 +16,6 @@ public class DateDimController {
 
     @GetMapping("/id")
     public ResponseEntity<ResponseObject> getIdByDate(@RequestBody DateDim dateDim){
-        System.out.println(dateDim);
-
         int id = service.getIdDateDim(dateDim.getFullDate());
 
         return ResponseEntity.status(HttpStatus.OK).body(

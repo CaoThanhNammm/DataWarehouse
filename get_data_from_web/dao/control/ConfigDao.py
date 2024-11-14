@@ -1,5 +1,9 @@
 import requests
 
+def findAll(url):
+    response = requests.get(url)
+    return response
+
 def getIdByKeyword(url, keyword):
     response = requests.get(url + f'/{keyword}')
     return response

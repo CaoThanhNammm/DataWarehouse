@@ -18,7 +18,7 @@ public class DateDim {
     @Column
     private int daySince2005;
     @ManyToOne
-    @JoinColumn(name = "monthSk")
+    @JoinColumn(name = "monthSince2005")
     private MonthDim monthSince2005;
     @Column
     private String dayOfWeek;
@@ -40,8 +40,6 @@ public class DateDim {
     private String weekSundayStart;
     @Column
     private String weekOfYearMonday;
-    @Column
-    private int yearWeekMonday;
     @Column
     private String weekMondayStart;
     @Column

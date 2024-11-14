@@ -5,6 +5,9 @@ import com.staging.dh.model.staging.Bike;
 import com.staging.dh.repository.staging.BikeRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 public class BikeService implements IBikeService {
@@ -17,6 +20,7 @@ public class BikeService implements IBikeService {
     }
 
     @Override
+    @Transactional
     public void deleteAll() {
         dao.deleteAll();
     }

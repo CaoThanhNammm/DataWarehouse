@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @CrossOrigin
 @RestController
 @RequestMapping("/api/bike")
@@ -23,6 +25,14 @@ public class BikeController {
 
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject("Success", "Save success", bike)
+        );
+    }
+
+    @DeleteMapping("/deleteAll")
+    public ResponseEntity<ResponseObject> deleteAll(){
+        service.deleteAll();
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject("Success", "Delete all success", "")
         );
     }
 }

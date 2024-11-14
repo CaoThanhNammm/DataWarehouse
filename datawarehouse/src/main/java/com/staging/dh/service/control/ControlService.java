@@ -5,6 +5,8 @@ import com.staging.dh.repository.control.ControlRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class ControlService implements IControllerService {
     @Autowired
@@ -30,5 +32,10 @@ public class ControlService implements IControllerService {
     @Override
     public Config getIdByKeyword(String keyword) {
         return dao.findByKeyword(keyword);
+    }
+
+    @Override
+    public List<Config> findAll() {
+        return dao.findAll();
     }
 }

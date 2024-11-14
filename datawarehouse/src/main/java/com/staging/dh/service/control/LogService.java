@@ -5,6 +5,9 @@ import com.staging.dh.repository.control.LogRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 public class LogService implements ILogService{
     @Autowired
@@ -12,6 +15,9 @@ public class LogService implements ILogService{
 
     @Override
     public void add(Log log) {
-        dao.save(log);
+
+        if(!dao.existsByWebsiteIdAndStatus(log.getWebsiteId(), log.getStatus())){
+            dao.save(log);
+        }
     }
 }

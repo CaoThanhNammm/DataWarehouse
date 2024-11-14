@@ -6,7 +6,6 @@ import configparser
 
 def config():
   options = webdriver.ChromeOptions()
-  options.add_argument("--headless") # Chạy ở chế độ ẩn
   options.add_argument("--no-sandbox") # Tắt chế độ sandbox
   options.add_argument("--disable-dev-shm-usage") # Sử dụng bộ nhớ ảo
   return webdriver.Chrome(options=options)
@@ -41,8 +40,8 @@ def split_array_into_three(arr):
 
     # Nếu có phần dư, phân phối nó cho các phần
     if remainder > 0:
-      part1.append(arr[2 * part_size])
+        part1 += arr[2 * part_size]
     if remainder > 1:
-      part2.append(arr[2 * part_size + 1])
+        part2 += arr[2 * part_size + 1]
 
     return part1, part2, part3

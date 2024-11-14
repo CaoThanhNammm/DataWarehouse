@@ -1,7 +1,7 @@
-from service.control import dateDimService
+from service.control import DateDimService
 
 def getIdToday(url, dateDimJson):
-    response = dateDimService.getIdToday(url, dateDimJson)
+    response = DateDimService.getIdToday(url, dateDimJson)
     if response:
         print('lấy id của ngày hôm nay trong datedim thành công')
         return response

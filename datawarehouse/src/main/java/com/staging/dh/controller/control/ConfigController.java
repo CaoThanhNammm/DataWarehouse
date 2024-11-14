@@ -8,12 +8,23 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/control")
-public class ControlController {
+public class ConfigController {
 
     @Autowired
     private IControllerService service;
+
+    @GetMapping("/findAll")
+    public ResponseEntity<ResponseObject> findAll(){
+        List<Config> configs = service.findAll();
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject("Success", "Get all website success", configs)
+        );
+    }
 
     @GetMapping("/get/{key}")
     public ResponseEntity<ResponseObject> getIdByKeyword(@PathVariable(name = "key") String keyword){
