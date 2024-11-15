@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/control")
+@RequestMapping("/api/config")
 public class ConfigController {
 
     @Autowired
@@ -37,10 +37,16 @@ public class ConfigController {
 
     @PostMapping("/add")
     public ResponseEntity<ResponseObject> add(@RequestBody Config config){
-        service.add(config);
+        Config configInserted = service.add(config);
+
+        if(configInserted != null){
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new ResponseObject("Success", "Add success", config)
+            );
+        }
 
         return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject("Success", "Add success", config)
+                new ResponseObject("Failed", "Add failed", null)
         );
     }
 

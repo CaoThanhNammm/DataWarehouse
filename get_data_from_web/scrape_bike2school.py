@@ -5,7 +5,7 @@ from selenium.webdriver.common.by import By
 import pandas as pd
 import API
 import general
-from controller.control import ConfigController, LogController, StatusController, DateDimController
+from controller.control import ConfigController, LogController, StatusController, DateDimController, EmailController
 from controller.staging import BikeController
 
 
@@ -34,19 +34,22 @@ def create_url_bike2school(pages, collection_num):
     urls = []
     driver = general.config()
     for page in pages:
-        print(page)
-        driver.get(page)
-
         try:
-            num_pages = driver.find_elements(By.CLASS_NAME, "page-link")
-            amount_page = int(num_pages[len(num_pages) - 2].text)
+            print(page)
+            driver.get(page)
 
-            for nums in range(1, amount_page + 1):
-                urls.append(f'{page}?q=collections:{collection_num[i]}&page={nums}&view=grid')
+            try:
+                num_pages = driver.find_elements(By.CLASS_NAME, "page-link")
+                amount_page = int(num_pages[len(num_pages) - 2].text)
+
+                for nums in range(1, amount_page + 1):
+                    urls.append(f'{page}?q=collections:{collection_num[i]}&page={nums}&view=grid')
+            except:
+                urls.append(page)
+            i = i + 1
         except:
-            urls.append(page)
-
-        i = i + 1
+            driver = general.config()
+            continue
 
     driver.quit()
     return urls
@@ -58,13 +61,16 @@ def get_hrefs_bike2school(urls):
     hrefs = []
     driver = general.config()
     for url in urls:
-        print(url)
-        driver.get(url)
+        try:
+            print(url)
+            driver.get(url)
 
-        div_a = driver.find_elements(By.CLASS_NAME, 'news-item-products')
-        for a in div_a:
-            hrefs.append(a.find_element(By.CSS_SELECTOR, 'a').get_attribute("href"))
-
+            div_a = driver.find_elements(By.CLASS_NAME, 'news-item-products')
+            for a in div_a:
+                hrefs.append(a.find_element(By.CSS_SELECTOR, 'a').get_attribute("href"))
+        except:
+            driver = general.config()
+            continue
     driver.quit()
     return hrefs
 
@@ -146,6 +152,7 @@ def get_data_detail_bike2school(hrefs):
                         BikeController.add(API.get_context_bike() + "/add", bikeJson)
             elif colors:
                 for color in colors:
+                    print("đang lấy dữ liệu...")
                     color.click()
                     status = driver.find_element(By.CLASS_NAME, 'a-stock').text
                     try:
@@ -180,6 +187,7 @@ def get_data_detail_bike2school(hrefs):
                     BikeController.add(API.get_context_bike() + "/add", bikeJson)
             elif sizes:
                 for size in sizes:
+                    print("đang lấy dữ liệu...")
                     size.click()
                     status = driver.find_element(By.CLASS_NAME, 'a-stock').text
                     try:
@@ -213,6 +221,7 @@ def get_data_detail_bike2school(hrefs):
                                            status, timeStartScrape, timeEndScrape]
                     BikeController.add(API.get_context_bike() + "/add", bikeJson)
             else:
+                print("đang lấy dữ liệu...")
                 status = driver.find_element(By.CLASS_NAME, 'a-stock').text
                 try:
                     price = driver.find_element(By.CLASS_NAME, 'product-price-old').text
@@ -240,7 +249,6 @@ def get_data_detail_bike2school(hrefs):
                     "timeEndScrape": timeEndScrape,
                     "status": status
                 }
-                print("đang lấy dữ liệu...")
                 data.loc[len(data)] = [id, name, price, price_sale, brand, color, size,
                                        description_part1, description_part2, description_part3,
                                        status, timeStartScrape, timeEndScrape]
@@ -257,6 +265,12 @@ def general_bike2school(url):
     # thêm log bắt đầu lấy dữ liệu------------------------------------------------------------------------------------
     website = ConfigController.getIdByKeyword(f"{API.get_context_config()}/get", API.get_keyword_bike2school())
     id_website = website["id"]
+
+    # gửi email thông báo hệ thống đang chạy
+    subject = API.get_subject_email()
+    message = API.create_message_for_email(API.get_message_running()) + f": {website["website"]}"
+    EmailController.send(f'{API.get_context_email()}/send', API.get_receiver_email(), subject, message)
+
 
     # lấy ra id của datedim hôm nay
     dateDimJson = {
@@ -302,6 +316,9 @@ def general_bike2school(url):
     # thêm log hoàn thành hoặc thất bại sau khi lấy xong dữ liệu--------------------------------------------
     timeEnd = general.get_local_date_time()
     if data.shape[0] > 0:
+        message = API.create_message_for_email(API.get_message_complete()) + f": {website.website}"
+        EmailController.send(f'{API.get_context_email()}/send', API.get_receiver_email(), subject, message)
+
         # thêm log complete
         logJson['status'] = {
             "id": StatusController.getStatusByName(f"{API.get_context_status()}/getStatusByName", API.get_type_complete())['id']
@@ -310,6 +327,9 @@ def general_bike2school(url):
         logJson['quantity'] = data.shape[0]
         logJson["message"] = API.get_message("endMessage")
     else:
+        message = API.create_message_for_email(API.get_message_failed() + f": {website.website}")
+        EmailController.send(f'{API.get_context_email()}/send', API.get_receiver_email(), subject, message)
+
         # thêm log failed
         logJson['status'] = {
             "id":

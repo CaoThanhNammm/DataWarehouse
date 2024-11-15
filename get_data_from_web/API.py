@@ -79,3 +79,7 @@ def create_message_for_email(message):
     Trạng thái(WAITING): {message}
     """
     return message
+
+def get_subject_email():
+    return get_var_in_env('subject_for_email', 'subject')
+

@@ -14,11 +14,13 @@ public class ControlService implements IControllerService {
 
 
     @Override
-    public void add(Config config) {
+    public Config add(Config config) {
         config.setKeyword(config.getKeyword().trim());
         if(!dao.existsByKeyword(config.getKeyword())){
             dao.save(config);
+            return config;
         }
+        return null;
     }
 
     @Override

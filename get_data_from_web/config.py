@@ -45,5 +45,5 @@ def send_email_for_prepare(subject, message):
 
 print(delete_all_bikes())
 print(set_all_website_waiting())
-print(send_email_for_prepare("Hệ Thống Báo Giá Xe Đạp", API.create_message_for_email(API.get_message_waiting())))
+print(send_email_for_prepare(API.get_subject_email(), API.create_message_for_email(API.get_message_waiting())))
 

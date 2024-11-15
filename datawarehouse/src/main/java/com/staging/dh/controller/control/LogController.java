@@ -18,10 +18,15 @@ public class LogController {
 
     @PostMapping("/add")
     public ResponseEntity<ResponseObject> add(@RequestBody Log log){
-        service.add(log);
+        Log logInserted = service.add(log);
 
+        if(logInserted != null){
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new ResponseObject("Success", "Add success", log)
+            );
+        }
         return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject("Success", "Add success", log)
+                new ResponseObject("Failed", "Add failed", log)
         );
     }
 }

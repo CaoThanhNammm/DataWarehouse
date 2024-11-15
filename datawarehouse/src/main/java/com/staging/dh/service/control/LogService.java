@@ -14,10 +14,11 @@ public class LogService implements ILogService{
     private LogRepo dao;
 
     @Override
-    public void add(Log log) {
-
+    public Log add(Log log) {
         if(!dao.existsByWebsiteIdAndStatus(log.getWebsiteId(), log.getStatus())){
             dao.save(log);
+            return log;
         }
+        return null;
     }
 }
