@@ -91,7 +91,10 @@ def get_data_detail_bike2school(hrefs):
         brand = 'N/A'
         color = 'N/A'
         size = 'N/A'
-
+        name = 'N/A'
+        price = 'N/A'
+        price_sale = 'N/A'
+        description_part1, description_part2, description_part3 = 'N/A', 'N/A', 'N/A'
         try:
             div_des = driver.find_element(By.CLASS_NAME, "ba-text-fpt")
         except:
@@ -120,6 +123,7 @@ def get_data_detail_bike2school(hrefs):
                         print("đang lấy dữ liệu...")
                         size.click()
                         status = driver.find_element(By.CLASS_NAME, 'a-stock').text
+
                         try:
                             price = driver.find_element(By.CLASS_NAME, 'product-price-old').text
                         except:
@@ -316,7 +320,7 @@ def general_bike2school(url):
     # thêm log hoàn thành hoặc thất bại sau khi lấy xong dữ liệu--------------------------------------------
     timeEnd = general.get_local_date_time()
     if data.shape[0] > 0:
-        message = API.create_message_for_email(API.get_message_complete()) + f": {website.website}"
+        message = API.create_message_for_email(API.get_message_complete()) + f": {website["website"]}"
         EmailController.send(f'{API.get_context_email()}/send', API.get_receiver_email(), subject, message)
 
         # thêm log complete
@@ -327,7 +331,7 @@ def general_bike2school(url):
         logJson['quantity'] = data.shape[0]
         logJson["message"] = API.get_message("endMessage")
     else:
-        message = API.create_message_for_email(API.get_message_failed() + f": {website.website}")
+        message = API.create_message_for_email(API.get_message_failed() + f": {website["website"]}")
         EmailController.send(f'{API.get_context_email()}/send', API.get_receiver_email(), subject, message)
 
         # thêm log failed
