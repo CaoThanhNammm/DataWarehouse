@@ -4,9 +4,11 @@ package org.example.dw21130558_mxt.service.datawarehouse;
 import jakarta.annotation.PostConstruct;
 import org.example.dw21130558_mxt.model.control.Log;
 import org.example.dw21130558_mxt.service.control.ControlLogService;
+import org.example.dw21130558_mxt.service.control.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.scheduling.annotation.Scheduled;
 
 @Service
 public class DatawarehouseService {
@@ -14,6 +16,7 @@ public class DatawarehouseService {
     @Autowired
     private ControlLogService controlLogService;
 
+    private EmailService emailService;
     private final JdbcTemplate dwJdbcTemplate;
     private final JdbcTemplate dmJdbcTemplate;
 
@@ -33,7 +36,11 @@ public class DatawarehouseService {
             isDataLoaded = true;  // Đánh dấu rằng dữ liệu đã được tải
         }
     }
-
+    @Scheduled(cron = "0 05 8 * * ?", zone = "Asia/Ho_Chi_Minh") // Lên lịch chạy mỗi ngày lúc 0:00 AM
+    public void scheduleLoadData() {
+        System.out.println("Scheduled task started: Loading data from staging to DW...");
+        loadDataFromStagingToDW();
+    }
     public void loadDataFromStagingToDW() {
 
         // 1. Kiểm tra nếu dữ liệu từ staging đã được load vào data warehouse hôm nay
@@ -67,12 +74,26 @@ public class DatawarehouseService {
 
             // 7. Cập nhật log với trạng thái thành công và số lượng bản ghi
             controlLogService.updateLogToSuccessful(runningLog.getId(), quantity);
+            emailService.sendEmailNotification(
+                    "xuanthuc254@gmail.com",
+                    "Data Load Successful",
+                    "Data successfully loaded from Staging to DW. Total records: " + quantity
+            );
+
+
+
+
             System.out.println("Data successfully loaded from Staging to DW with quantity: " + quantity);
             System.out.println("Data successfully loaded from Staging to DW.");
         } catch (Exception e) {
             // 8. Nếu có lỗi, cập nhật log với trạng thái thất bại và in ra thông báo lỗi
             System.out.println("Error loading data: " + e.getMessage());
             controlLogService.updateLogToFailed(runningLog.getId());
+            emailService.sendEmailNotification(
+                    "xuanthuc254@gmail.com",
+                    "Data Load Failed",
+                    "Error loading data from Staging to DW: " + e.getMessage()
+            );
         }
     }
 
