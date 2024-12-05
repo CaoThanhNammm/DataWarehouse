@@ -1,4 +1,5 @@
-import React from "react"
+import axios from "axios"
+import { useEffect, useState } from "react"
 import {
   LineChart,
   Line,
@@ -9,66 +10,80 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts"
-const salesData = [
-  {
-    name: "Jan",
-    revenue: 4000,
-    profit: 2400,
-  },
-  {
-    name: "Feb",
-    revenue: 3000,
-    profit: 1398,
-  },
-  {
-    name: "Mar",
-    revenue: 9800,
-    profit: 2000,
-  },
-  {
-    name: "Apr",
-    revenue: 3908,
-    profit: 2780,
-  },
-  {
-    name: "May",
-    revenue: 4800,
-    profit: 1890,
-  },
-  {
-    name: "Jun",
-    revenue: 3800,
-    profit: 2390,
-  },
-]
+
 const LineChartComponent = () => {
+  const [groupedPrice, setGroupedPrice] = useState([])
+
+  const categorizePriceRange = (products) => {
+    const grouped = [
+      {
+        name: "Giá dưới 2 triệu",
+        count: products.filter((product) => product.price < 2000000).length,
+      },
+      {
+        name: "Giá từ 2 triệu đến 5 triệu",
+        count: products.filter(
+          (product) => product.price >= 2000000 && product.price <= 5000000
+        ).length,
+      },
+      {
+        name: "Giá trên 5 triệu",
+        count: products.filter((product) => product.price > 5000000).length,
+      },
+    ]
+    console.log(grouped)
+    setGroupedPrice(grouped) // Cập nhật mảng các nhóm sản phẩm
+  }
+  useEffect(() => {
+    const fetchDataProducts = async () => {
+      try {
+        const reponse = await axios.get("http://localhost:5000/products")
+        const productData = reponse?.data
+        categorizePriceRange(productData)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    fetchDataProducts()
+  }, [])
+  //   <div>
+  //   <h2>Biểu đồ đường (Line Chart)</h2>
+  //   <ResponsiveContainer width="100%" height={400}>
+  //     <LineChart data={products}>
+  //       <CartesianGrid strokeDasharray="3 3" />
+  //       <XAxis dataKey="name" />
+  //       <YAxis />
+  //       <Tooltip />
+  //       <Legend />
+  //       <Line
+  //         type="monotone"
+  //         dataKey="price"
+  //         stroke="#8884d8"
+  //         activeDot={{ r: 8 }}
+  //       />
+  //     </LineChart>
+  //   </ResponsiveContainer>
+  // </div>
   return (
-    <ResponsiveContainer>
-      <LineChart
-        width={500}
-        height={400}
-        margin={{ right: 30 }}
-        data={salesData}
-      >
-        <YAxis />
-        <XAxis dataKey="name" />
-        <CartesianGrid strokeDasharray="3 3" />
-        <Tooltip />
-        <Legend />
-        <Line
-          dataKey="revenue"
-          stroke="#2563eb"
-          fill="#3b82f6"
-          type="monotone"
-        />
-        <Line
-          dataKey="profit"
-          stroke="#7c3aed"
-          fill="#8b5cf6"
-          type="monotone"
-        />
-      </LineChart>
-    </ResponsiveContainer>
+    <div className="w-[800px]">
+      <h2>Biểu đồ đường (Line Chart)</h2>
+      <ResponsiveContainer width="100%" height={400}>
+        <LineChart data={groupedPrice} margin={{ left: 30 }}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="name" />
+          <YAxis />
+          <Tooltip label="Giá" />
+          <Legend />
+          <Line
+            type="monotone"
+            dataKey="count"
+            name="Giá"
+            stroke="#8884d8"
+            activeDot={{ r: 8 }}
+          />
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
   )
 }
 
