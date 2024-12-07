@@ -6,6 +6,7 @@ BEGIN
     START TRANSACTION;
 
     -- Xóa các bảng tạm nếu tồn tại
+    DELETE FROM datawarehouse.product_dim;
     DROP TEMPORARY TABLE IF EXISTS temp_update_products;
     DROP TEMPORARY TABLE IF EXISTS temp_product;
     DROP TEMPORARY TABLE IF EXISTS temp_ids;
@@ -176,8 +177,7 @@ DELIMITER ;
 -- Gọi Procedure LoadDataFromStagingToDW
 CALL LoadDataFromStagingToDW();
 
--- Xóa procedure sau khi gọi
-DROP PROCEDURE staging.LoadDataFromStagingToDW;
+
 
 -- Kiểm tra dữ liệu trong bảng product_dim
 SELECT * FROM datawarehouse.product_dim ORDER BY product_sk;
@@ -205,3 +205,13 @@ SELECT COUNT(*) FROM temp_ids;
 TRUNCATE TABLE datawarehouse.product_dim; -- Muốn test thay đổi dữ liệu thì comment dòng này lại
 DROP TABLE temp_product;
 DROP TABLE temp_update_products;
+-- Xóa procedure sau khi gọi
+DROP PROCEDURE staging.LoadDataFromStagingToDW;
+
+--Xóa các bảng tạm nếu đã tồn tại
+--Tạo bảng tạm temp_product
+--Chèn sản phẩm mới vào product_dim
+---Tạo bảng temp_update_products để cập nhật sản phẩm
+--Tìm các ID cần cập nhật
+-- Cập nhật trạng thái "đã xóa" trong product_dim
+--Chèn các sản phẩm mới vào product_dim

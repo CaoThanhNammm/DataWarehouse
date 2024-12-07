@@ -11,11 +11,11 @@ import org.springframework.stereotype.Component;
 public class DataLoader implements CommandLineRunner {
 
     @Autowired
-    private DatawarehouseService dwService;
+    private DatawarehouseService dw;
 
     @Override
     public void run(String... args) throws Exception {
         // Gọi phương thức load dữ liệu từ DW vào DM
-        dwService.loadDataFromStagingToDW();
+        dw.loadDataFromStagingToDW();
     }
 }

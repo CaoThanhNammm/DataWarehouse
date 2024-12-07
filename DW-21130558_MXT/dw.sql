@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS product_dim (
   date_insert TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- Ngày chèn
   expired_date DATE DEFAULT '9999-12-31',  -- Ngày hết hạn mặc định
   date_sk INT,                     -- Thêm cột date_sk để lưu khóa từ bảng date_dim
-  FOREIGN KEY (date_sk) REFERENCES date_dim(date_sk)  -- Tạo liên kết với bảng date_dim
+      FOREIGN KEY (date_sk) REFERENCES date_dim(date_sk)  -- Tạo liên kết với bảng date_dim
 );
 
 

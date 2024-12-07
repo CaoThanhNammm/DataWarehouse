@@ -1,32 +1,27 @@
 package org.example.dw21130558_mxt.service.control;
 
-
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.NonFinal;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+
+
 @Service
-@Slf4j
-@Data
-@RequiredArgsConstructor
-public class EmailService implements IEmailService{
-    @Autowired
+public class EmailService {
+
+   @Autowired
     private JavaMailSender mailSender;
 
-
-    @Override
-    public void sendEmailNotification(String to, String subject, String body) {
+    public void sendEmail(String recipient, String subject, String body) {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(to);
+        message.setTo(recipient);
         message.setSubject(subject);
         message.setText(body);
-        mailSender.send(message);
-    }
 
+        mailSender.send(message);
+        System.out.println("Email sent successfully.");
+    }
 }
+
+
