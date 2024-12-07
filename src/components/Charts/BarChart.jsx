@@ -12,52 +12,37 @@ import {
   Bar,
 } from "recharts"
 
-// eslint-disable-next-line react/prop-types
 const BarChartComponent = ({ highestPrice, lowestPrice }) => {
   const [averagePrice, setAveragePrice] = useState(0)
-  const calculateAveragePrice = (products) => {
-    if (products.length === 0) {
-      setAveragePrice(0)
-      return
+
+  const getAveragePrice = async () => {
+    try {
+      const response = await axios.get("http://localhost:5000/average-price")
+      console.log(response?.data)
+      setAveragePrice(response?.data?.average_price)
+    } catch (error) {
+      console.log(error)
     }
-    console.log(products)
-    const total = products.reduce((sum, product) => sum + product.price, 0)
-    const average = total / products.length
-    console.log(average)
-    setAveragePrice(average)
   }
   useEffect(() => {
-    const fetchDataProducts = async () => {
-      try {
-        const reponse = await axios.get("http://localhost:5000/products")
-        const productData = reponse?.data
-        calculateAveragePrice(productData)
-      } catch (error) {
-        console.log(error)
-      }
-    }
-    fetchDataProducts()
+    getAveragePrice()
   }, [])
+
   // eslint-disable-next-line react/prop-types
-  const cleanedPriceHighest = highestPrice?.replace(/[.,VND]/g, "")
-  const highestPriceInt = parseInt(cleanedPriceHighest, 10)
-  // eslint-disable-next-line react/prop-types
-  const cleanedPriceLowest = lowestPrice?.replace(/[.,VND]/g, "")
-  const lowestPriceInt = parseInt(cleanedPriceLowest, 10)
 
   return (
     <ResponsiveContainer width="100%" height={400}>
       <BarChart
         data={[
-          { name: "Giá Thấp Nhất", value: lowestPriceInt },
+          { name: "Giá Thấp Nhất", value: lowestPrice },
           { name: "Giá Trung Bình ", value: averagePrice },
-          { name: "Giá Cao Nhất", value: highestPriceInt },
+          { name: "Giá Cao Nhất", value: highestPrice },
         ]}
         margin={{ left: 30 }}
       >
         <CartesianGrid />
         <XAxis dataKey="name" />
-        <YAxis />
+        <YAxis dataKey="value" />
         <Tooltip content={<CustomTooltip />} />
         <Legend />
         <Bar dataKey="value" name="Giá" fill="#2563eb" />
@@ -73,10 +58,7 @@ const CustomTooltip = ({ active, payload, label }) => {
       <div className="p-4 bg-slate-900 flex flex-col gap-4 rounded-md text-white">
         <p className="text-medium text-lg">{label}</p>
         <p className="text-sm font-bold text-blue-400">
-          Giá:{" "}
-          <span className="ml-2">
-            {payload[0]?.value?.toLocaleString("vi-VN")} VND
-          </span>
+          Giá: <span className="ml-2">{payload[0].value} triệu VND</span>
         </p>
       </div>
     )

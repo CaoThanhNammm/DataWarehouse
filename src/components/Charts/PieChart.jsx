@@ -10,37 +10,21 @@ import {
 } from "recharts"
 
 const PieChartComponent = () => {
-  const [groupedPrice, setGroupedPrice] = useState([])
+  const [priceRange, setPriceRange] = useState([])
   useEffect(() => {
-    // Ví dụ về cách lấy dữ liệu từ API
-    axios
-      .get("http://localhost:5000/products") // Giả sử API trả về danh sách sản phẩm
-      .then((response) => {
-        // Giả sử bạn có data để phân loại sản phẩm theo các giá
-
-        categorizePriceRange(response?.data)
-      })
-      .catch((error) => console.error("Error fetching data:", error))
+    fetchPriceRange()
   }, [])
-  const categorizePriceRange = (products) => {
-    const grouped = [
-      {
-        name: "Giá dưới 2 triệu",
-        count: products.filter((product) => product.price < 2000000).length,
-      },
-      {
-        name: "Giá từ 2 triệu đến 5 triệu",
-        count: products.filter(
-          (product) => product.price >= 2000000 && product.price <= 5000000
-        ).length,
-      },
-      {
-        name: "Giá trên 5 triệu",
-        count: products.filter((product) => product.price > 5000000).length,
-      },
-    ]
-    console.log(grouped)
-    setGroupedPrice(grouped) // Cập nhật mảng các nhóm sản phẩm
+
+  const fetchPriceRange = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:5000/api/products/price-range"
+      )
+      const priceRangeData = response?.data
+      setPriceRange(priceRangeData)
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   return (
@@ -49,16 +33,16 @@ const PieChartComponent = () => {
       <ResponsiveContainer width="100%" height={600}>
         <PieChart>
           <Pie
-            data={groupedPrice}
+            data={priceRange}
             dataKey="count"
-            nameKey="name"
+            nameKey="priceRange"
             cx="50%"
             cy="50%"
             outerRadius={150}
             label
             isAnimationActive={false}
           >
-            {groupedPrice.map((entry, index) => (
+            {priceRange.map((entry, index) => (
               <Cell
                 key={`cell-${index}`}
                 fill={

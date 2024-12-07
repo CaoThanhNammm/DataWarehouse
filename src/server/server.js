@@ -15,7 +15,7 @@ const db = mysql.createConnection({
   host: "localhost",
   user: "root",
   password: "",
-  database: "testdb",
+  database: "datamart",
 })
 
 db.connect((err) => {
@@ -184,16 +184,7 @@ app.get("/api/products/highest-price", (req, res) => {
     if (err) throw err
     result.map((product) => {
       if (product.price) {
-        // Loại bỏ dấu chấm và ký tự ₫, sau đó chuyển thành số
-        const cleanedPrice = product.price.replace(/\./g, "").replace(" ₫", "")
-        product.price = parseFloat(cleanedPrice) // Chuyển chuỗi thành số
-        let formattedPrice = new Intl.NumberFormat("vi-VN", {
-          style: "currency",
-          currency: "VND",
-        }).format(product.price)
-        formattedPrice = formattedPrice.replace("₫", "VND")
-        product.price = formattedPrice
-        return product
+        return product.price
       }
     })
     res.json(result)
@@ -223,22 +214,39 @@ app.get("/api/products/lowest-price", (req, res) => {
 })
 app.get("/api/products/price-range", (req, res) => {
   const query = `
-      SELECT 
-          CASE
-              WHEN price < 1000000 THEN 'Dưới 1 triệu'
-              WHEN price BETWEEN 1000000 AND 5000000 THEN 'Từ 1-5 triệu'
-              ELSE 'Trên 5 triệu'
-          END AS priceRange, 
-          COUNT(*) AS count 
-      FROM product 
-      GROUP BY priceRange
-      ORDER BY count DESC` // Sắp xếp theo số lượng phân khúc giá giảm dần
+         SELECT 
+            CASE
+                WHEN price < 5 THEN 'Dưới 5 triệu'
+                WHEN price BETWEEN 5 AND 10 THEN 'Từ 5-10 triệu'
+                ELSE 'Trên 10 triệu'
+            END AS priceRange, 
+            COUNT(*) AS count 
+        FROM product 
+        GROUP BY priceRange
+        ORDER BY count DESC` // Sắp xếp theo số lượng phân khúc giá giảm dần
   db.query(query, (err, result) => {
     if (err) {
       res.status(500).send("Error fetching price range stats")
     } else {
       res.json(result)
     }
+  })
+})
+app.get("/average-price", (req, res) => {
+  const query = "SELECT AVG(price) AS average_price FROM product"
+
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error("Error fetching data:", err)
+      return res.status(500).json({ error: "Internal Server Error" })
+    }
+
+    // Làm tròn giá trung bình đến 2 chữ số thập phân
+    const averagePrice = parseFloat(results[0].average_price).toFixed(2)
+
+    res.status(200).json({
+      average_price: parseFloat(averagePrice), // Đảm bảo kết quả là số (không phải chuỗi)
+    })
   })
 })
 app.listen(port, () => {

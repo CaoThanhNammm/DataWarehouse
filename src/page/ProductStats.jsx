@@ -6,14 +6,13 @@ import axios from "axios"
 import PieChartComponent from "../components/Charts/PieChart"
 
 const ProductStats = () => {
-  const [products, setProducts] = useState([])
-
   const [stats, setStats] = useState([
     {
       highestPrice: 0,
       lowestPrice: 0,
     },
   ])
+  const [priceRange, setPriceRange] = useState([])
   const fetchStats = async () => {
     try {
       const [highestPrice, lowestPrice] = await Promise.all([
@@ -28,21 +27,22 @@ const ProductStats = () => {
       console.log(err)
     }
   }
-  useEffect(() => {
-    const fetchDataProducts = async () => {
-      try {
-        const reponse = await axios.get("http://localhost:5000/products")
-
-        const productData = reponse?.data
-        console.log(productData)
-        setProducts(productData)
-      } catch (error) {
-        console.log(error)
-      }
+  const fetchPriceRange = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:5000/api/products/price-range"
+      )
+      const priceRangeData = response?.data
+      setPriceRange(priceRangeData)
+    } catch (error) {
+      console.log(error)
     }
-    fetchDataProducts()
+  }
+  useEffect(() => {
     fetchStats()
+    fetchPriceRange()
   }, [])
+
   return (
     <div>
       <div className="p-10 text-xl">
@@ -51,35 +51,22 @@ const ProductStats = () => {
         <div className="flex gap-10 my-4">
           <p className="font-bold w-[30%]">Giá cao nhất:</p>
 
-          <p>{stats.highestPrice}</p>
+          <p>{stats.highestPrice} triệu VND</p>
         </div>
         <div className="flex gap-10 my-4">
           <p className="font-bold w-[30%]">Giá thấp nhất:</p>
 
           <p>{stats.lowestPrice}</p>
         </div>
-        <div className="flex gap-10 my-4">
-          <p className="font-bold w-[30%]">Sản phẩm dưới 2 triệu:</p>
+        {priceRange?.map((item, index) => {
+          return (
+            <div key={index} className="flex gap-10 my-4">
+              <p className="font-bold w-[30%]">{item.priceRange}</p>
 
-          <p>
-            {" "}
-            {products.filter((product) => product.price < 2000000).length} sản
-            phẩm
-          </p>
-        </div>
-        <div className="flex gap-10">
-          <p className="font-bold w-[30%]">Sản phẩm có giá từ 2 đến 5 triệu:</p>
-          <p>
-            {" "}
-            {
-              products.filter(
-                (product) =>
-                  product.price >= 2000000 && product.price <= 5000000
-              ).length
-            }{" "}
-            sản phẩm
-          </p>
-        </div>
+              <p> {item.count} sản phẩm</p>
+            </div>
+          )
+        })}
       </div>
       <main className=" min-h-screen items-center px-4 md:px-8 xl:px-10 py-44">
         <div className="flex flex-col w-full gap-20 max-w-[1400px]">
