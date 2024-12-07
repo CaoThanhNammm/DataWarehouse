@@ -122,9 +122,9 @@ def get_data_detail_xedapgiakho(hrefs):
         name = driver.find_element(By.CLASS_NAME, 'product-title').text
         time.sleep(1)
         # lấy ra div chứa giá giảm
-        div_price = driver.find_element(By.CLASS_NAME, 'price-on-sale')
         # lấy ra giá
         try:
+            div_price = driver.find_element(By.CLASS_NAME, 'price-on-sale')
             price = div_price.find_elements(By.CLASS_NAME, 'woocommerce-Price-amount')[1].text
         except:
             price = ""
