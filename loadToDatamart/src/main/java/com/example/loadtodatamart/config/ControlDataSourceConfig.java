@@ -15,39 +15,44 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-
 @Configuration
 @EnableTransactionManagement
 @EnableJpaRepositories(
-		basePackages = "com.example.loadtodatamart.repository.control",
+		basePackages = "com.example.loadtodatamart.repository.control", // Repository cho database control
 		entityManagerFactoryRef = "controlEntityManagerFactory",
 		transactionManagerRef = "controlTransactionManager")
 public class ControlDataSourceConfig {
 
-	@Bean
 	@Primary
+	@Bean
 	@ConfigurationProperties("app.datasource.control")
 	public DataSourceProperties controlDataSourceProperties() {
 		return new DataSourceProperties();
 	}
 
-	@Bean
 	@Primary
+	@Bean
 	public DataSource controlDataSource() {
-		return controlDataSourceProperties().initializeDataSourceBuilder().type(DriverManagerDataSource.class).build();
+		return controlDataSourceProperties()
+				.initializeDataSourceBuilder()
+				.type(DriverManagerDataSource.class)
+				.build();
 	}
 
 	@Primary
 	@Bean(name = "controlEntityManagerFactory")
 	public LocalContainerEntityManagerFactoryBean controlEntityManagerFactory(EntityManagerFactoryBuilder builder) {
-		return builder.dataSource(controlDataSource()).packages("com.example.loadtodatamart.model.control").build();
+		return builder
+				.dataSource(controlDataSource())
+				.packages("com.example.loadtodatamart.model.control") // Model ánh xạ
+				.persistenceUnit("control")
+				.build();
 	}
 
 	@Primary
 	@Bean(name = "controlTransactionManager")
 	public PlatformTransactionManager controlTransactionManager(
-			final @Qualifier("controlEntityManagerFactory") LocalContainerEntityManagerFactoryBean controlEntityManagerFactory) {
+			@Qualifier("controlEntityManagerFactory") LocalContainerEntityManagerFactoryBean controlEntityManagerFactory) {
 		return new JpaTransactionManager(controlEntityManagerFactory.getObject());
 	}
-
 }
