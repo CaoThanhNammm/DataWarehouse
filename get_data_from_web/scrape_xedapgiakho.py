@@ -111,8 +111,8 @@ def get_data_detail_xedapgiakho(hrefs):
 
     # khởi tạo DataFrame có các cột cần lấy
     data = pd.DataFrame(
-        columns=['id', 'name', 'price', 'priceSale', 'brand', 'color', 'size', 'description_part1', 'description_part2',
-                 'description_part3', 'status', 'timeStartScrape', 'timeEndScrape'])
+        columns=['id', 'name', 'price', 'priceSale', 'brand', 'color', 'size', 'descriptionPart1', 'descriptionPart2',
+                 'descriptionPart3', 'status', 'timeStartScrape', 'timeEndScrape'])
     i = 1
     # lặp qua từng sản phẩm
     for href in hrefs:
@@ -211,9 +211,9 @@ def get_data_detail_xedapgiakho(hrefs):
                     "brand": brand,
                     "color": color_name,
                     "size": size,
-                    "description_part1": description_part1,
-                    "description_part2": description_part2,
-                    "description_part3": description_part3,
+                    "descriptionPart1": description_part1,
+                    "descriptionPart2": description_part2,
+                    "descriptionPart3": description_part3,
                     "timeStartScrape": timeStartScrape,
                     "timeEndScrape": timeEndScrape,
                     "status": status
@@ -333,8 +333,4 @@ def general_xedapgiakho(url):
     return data
 
 
-# ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-# lấy url của website xepdapgiakho
-url = ConfigController.getIdByKeyword(f"{API.get_context_config()}/get", API.get_keyword_xedapgiakho())["website"]
-data = general_xedapgiakho(url)
 

@@ -51,7 +51,4 @@ def send_email_for_prepare(subject, message):
     res = EmailController.send(f'{API.get_context_email()}/send', API.get_receiver_email(), subject, message)
     return res
 
-print(delete_all_bikes())
-print(set_all_website_waiting())
-print(send_email_for_prepare(API.get_subject_email(), API.create_message_for_email(API.get_message_waiting())))
 

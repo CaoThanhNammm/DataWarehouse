@@ -124,7 +124,7 @@ def get_data_detail_bike2school(hrefs):
     # khởi tạo DataFrame có các cột cần lấy
     data = pd.DataFrame(
         columns=[
-            'id', 'name', 'price', 'priceSale', 'brand', 'color', 'size', 'description_part1', 'description_part2', 'description_part3', 'status', 'timeStartScrape', 'timeEndScrape'
+            'id', 'name', 'price', 'priceSale', 'brand', 'color', 'size', 'descriptionPart1', 'descriptionPart2', 'descriptionPart3', 'status', 'timeStartScrape', 'timeEndScrape'
         ])
 
     i = 1
@@ -226,9 +226,9 @@ def get_data_detail_bike2school(hrefs):
                             "brand": brand,
                             "color": color.text,
                             "size": size.text,
-                            "description_part1": description_part1,
-                            "description_part2": description_part2,
-                            "description_part3": description_part3,
+                            "descriptionPart1": description_part1,
+                            "descriptionPart2": description_part2,
+                            "descriptionPart3": description_part3,
                             "timeStartScrape": timeStartScrape,
                             "timeEndScrape": timeEndScrape,
                             "status": status
@@ -461,7 +461,3 @@ def general_bike2school(url):
     LogController.add(f"{API.get_context_log()}/add", logJson)
     return data
 
-# ---------------------------------------------------------------------------------------------------------------------------------------------
-# lấy url của website bike2schol
-website = ConfigController.getIdByKeyword(f'{API.get_context_config()}/get', API.get_keyword_bike2school())['website']
-general_bike2school(website)
