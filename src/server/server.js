@@ -67,19 +67,6 @@ app.get("/products", (req, res) => {
     } else {
       // Chuyển đổi giá trị price từ chuỗi có dấu chấm và ký tự ₫ thành số
       results.forEach((product) => {
-        if (product.price) {
-          // Loại bỏ dấu chấm và ký tự ₫, sau đó chuyển thành số
-          const cleanedPrice = product.price
-            .replace(/\./g, "")
-            .replace(" ₫", "")
-          product.price = parseFloat(cleanedPrice) // Chuyển chuỗi thành số
-        }
-        if (product.priceSale) {
-          const cleanedPriceSale = product.priceSale
-            .replace(/\./g, "")
-            .replace(" ₫", "")
-          product.priceSale = parseFloat(cleanedPriceSale)
-        }
         if (product.color) {
           product.color = product.color.replace(/^:/, "").trim()
         }
@@ -191,7 +178,7 @@ app.get("/api/products/highest-price", (req, res) => {
   })
 })
 app.get("/api/products/lowest-price", (req, res) => {
-  const query = "SELECT * FROM product ORDER BY price ASC LIMIT 1"
+  const query = "SELECT min(price) as minPrice FROM product WHERE price <> 0"
 
   db.query(query, (err, result) => {
     if (err) throw err
@@ -247,6 +234,44 @@ app.get("/average-price", (req, res) => {
     res.status(200).json({
       average_price: parseFloat(averagePrice), // Đảm bảo kết quả là số (không phải chuỗi)
     })
+  })
+})
+app.get("/total-products", (req, res) => {
+  const query = "SELECT COUNT(*) AS total FROM product WHERE isDelete = 0"
+
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error("Lỗi khi truy vấn MySQL:", err)
+      return res.status(500).json({ error: "Lỗi máy chủ" })
+    }
+
+    res.json({ total: results[0].total })
+  })
+})
+app.get("/available-products", (req, res) => {
+  const query =
+    "SELECT COUNT(*) AS total_in_stock FROM product WHERE status = 'Còn hàng' AND isDelete = 0"
+
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error("Lỗi khi truy vấn MySQL:", err)
+      return res.status(500).json({ error: "Lỗi máy chủ" })
+    }
+
+    res.json({ total_in_stock: results[0].total_in_stock })
+  })
+})
+app.get("/out-of-stock-products", (req, res) => {
+  const query =
+    "SELECT COUNT(*) AS total_out_of_stock FROM product WHERE status = 'Hết hàng' and isDelete = 0"
+
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error("Lỗi khi truy vấn MySQL:", err)
+      return res.status(500).json({ error: "Lỗi máy chủ" })
+    }
+
+    res.json({ total_out_of_stock: results[0].total_out_of_stock })
   })
 })
 app.listen(port, () => {

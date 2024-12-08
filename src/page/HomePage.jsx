@@ -18,9 +18,9 @@ const HomePage = () => {
   useEffect(() => {
     const fetchDataProducts = async () => {
       try {
-        const reponse = await axios.get("http://localhost:5000/products")
+        const response = await axios.get("http://localhost:5000/products")
 
-        const productData = reponse?.data
+        const productData = response?.data
         console.log(productData)
         setProducts(productData)
       } catch (error) {
@@ -54,7 +54,7 @@ const HomePage = () => {
 
       <div className="overflow-x-auto max-h-[800px]">
         <table className="min-w-full border border-gray-300 text-sm text-left">
-          <thead className="bg-gray-200 bg-gray-200 sticky top-0 z-10">
+          <thead className="bg-gray-200   sticky top-0 z-10">
             <tr>
               {Object.keys(products[0]).map((thead) => {
                 return (

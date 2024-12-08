@@ -13,15 +13,19 @@ const ProductStats = () => {
     },
   ])
   const [priceRange, setPriceRange] = useState([])
+  const [totalProduct, setTotalProduct] = useState(0)
+  const [countAvailableProduct, setCountAvailableProduct] = useState(0)
+  const [countNotAvailableProduct, setCountNotAvailableProduct] = useState(0)
   const fetchStats = async () => {
     try {
       const [highestPrice, lowestPrice] = await Promise.all([
         axios.get("http://localhost:5000/api/products/highest-price"),
         axios.get("http://localhost:5000/api/products/lowest-price"),
       ])
+      console.log(lowestPrice)
       setStats({
-        highestPrice: highestPrice.data[0].price,
-        lowestPrice: lowestPrice.data[0].price,
+        highestPrice: highestPrice?.data[0]?.price,
+        lowestPrice: lowestPrice?.data[0]?.minPrice,
       })
     } catch (err) {
       console.log(err)
@@ -38,13 +42,63 @@ const ProductStats = () => {
       console.log(error)
     }
   }
+  const fetchTotalProduct = async () => {
+    try {
+      const response = await axios.get("http://localhost:5000/total-products")
+      const totalProductData = response?.data.total
+      setTotalProduct(totalProductData)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const fetchAvailableProduct = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:5000/available-products"
+      )
+      const countAvailableProduct = response?.data?.total_in_stock
+      setCountAvailableProduct(countAvailableProduct)
+    } catch (err) {
+      console.log(err)
+    }
+  }
+  const fetchNotAvailableProduct = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:5000/out-of-stock-products"
+      )
+      const countNotAvailableProduct = response?.data?.total_out_of_stock
+      setCountNotAvailableProduct(countNotAvailableProduct)
+    } catch (err) {
+      console.log(err)
+    }
+  }
   useEffect(() => {
+    fetchTotalProduct()
+    fetchAvailableProduct()
+    fetchNotAvailableProduct()
     fetchStats()
     fetchPriceRange()
   }, [])
 
   return (
     <div>
+      <div className="p-10 text-xl">
+        <h1 className="text-center text-3xl font-bold">Thống kê sản phẩm</h1>
+        <div className="flex gap-10 my-4">
+          <p className="font-bold w-[30%]">Tổng số sản phẩm:</p>
+          <p>{totalProduct} sản phẩm</p>
+        </div>
+        <div className="flex gap-10 my-4">
+          <p className="font-bold w-[30%]">Số sản phẩm còn hàng:</p>
+          <p>{countAvailableProduct} sản phẩm</p>
+        </div>
+        <div className="flex gap-10 my-4">
+          <p className="font-bold w-[30%]">Số sản phẩm hết hàng:</p>
+          <p>{countNotAvailableProduct} sản phẩm</p>
+        </div>
+      </div>
       <div className="p-10 text-xl">
         {" "}
         <h1>Thống kê sản phẩm theo giá:</h1>
@@ -56,7 +110,7 @@ const ProductStats = () => {
         <div className="flex gap-10 my-4">
           <p className="font-bold w-[30%]">Giá thấp nhất:</p>
 
-          <p>{stats.lowestPrice}</p>
+          <p>{stats.lowestPrice} triệu VND</p>
         </div>
         {priceRange?.map((item, index) => {
           return (
