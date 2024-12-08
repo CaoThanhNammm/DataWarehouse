@@ -19,7 +19,7 @@ public class Log {
 
     @ManyToOne
     @JoinColumn(name = "websiteId")
-    private Control websiteId;
+    private Config websiteId;
 
     @Column()
     private String message;

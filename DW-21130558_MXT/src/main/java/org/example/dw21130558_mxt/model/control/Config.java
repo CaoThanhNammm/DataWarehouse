@@ -8,9 +8,9 @@ import lombok.ToString;
 @Getter
 @ToString
 @Setter
-@Table(name = "control")
+@Table(name = "config")
 @Entity
-public class Control {
+public class Config {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;

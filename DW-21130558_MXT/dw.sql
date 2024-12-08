@@ -5,8 +5,8 @@ ALTER DATABASE datawarehouse
 CHARACTER SET utf8mb4
 COLLATE utf8mb4_general_ci;
 
-DROP TABLE IF EXISTS product_dim;
-CREATE TABLE IF NOT EXISTS product_dim (
+DROP TABLE IF EXISTS dim_bikes_processed;
+CREATE TABLE IF NOT EXISTS dim_bikes_processed (
   product_sk INT AUTO_INCREMENT PRIMARY KEY,
   id VARCHAR(255) NULL DEFAULT NULL,
   name VARCHAR(255) NULL DEFAULT NULL,
@@ -27,6 +27,23 @@ CREATE TABLE IF NOT EXISTS product_dim (
   date_sk INT,                     -- Thêm cột date_sk để lưu khóa từ bảng date_dim
       FOREIGN KEY (date_sk) REFERENCES date_dim(date_sk)  -- Tạo liên kết với bảng date_dim
 );
+-- Tạo bảng dim_bikes_raw nếu chưa tồn tại
+CREATE TABLE IF NOT EXISTS datawarehouse.dim_bikes_raw (
+    naturalId VARCHAR(255),
+    id VARCHAR(255),
+    name VARCHAR(255),
+    price VARCHAR(255),
+    priceSale VARCHAR(255),
+    brand VARCHAR(255),
+    color VARCHAR(255),
+    size VARCHAR(255),
+    status VARCHAR(255),
+    description_part1 TEXT,
+    description_part2 TEXT,
+    description_part3 TEXT,
+    timeStartInsert DATETIME,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    ) ENGINE=InnoDB;
 
 
 -- tạo bảng date_dim
@@ -52,28 +69,3 @@ CREATE TABLE IF NOT EXISTS date_dim (
   day_type VARCHAR(10) NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS monthdim (
-                            monthSk int(11) NOT NULL,
-                            calendarYearMonth varchar(255) DEFAULT NULL,
-                            dateSkEnd int(11) DEFAULT NULL,
-                            dateSkStart int(11) DEFAULT NULL,
-                            monthSince2005 int(11) DEFAULT NULL
-)
-ALTER TABLE `monthdim`
-    ADD PRIMARY KEY (`monthSk`) USING BTREE;
-COMMIT;
-DROP TABLE IF EXISTS month_dim;
--- Load date_dim từ csv vào datawarehouse
-LOAD DATA INFILE 'D:\\date_dim.csv'
-INTO TABLE date_dim
-FIELDS TERMINATED BY ','
-ENCLOSED BY '"'
-LINES TERMINATED BY '\n'
-IGNORE 0 ROWS;
--- Load month_dim từ csv vào datawarehouse
-LOAD DATA INFILE 'D:\\month_dim.csv'
-INTO TABLE date_dim
-FIELDS TERMINATED BY ','
-ENCLOSED BY '"'
-LINES TERMINATED BY '\n'
-IGNORE 0 ROWS;
