@@ -52,14 +52,11 @@ public class Date {
     @Column(name = "week_of_year_monday")
     private String weekOfYearMonday;
 
+    @Column(name = "year_week_monday")
+    private String yearWeekMonday;
+
     @Column(name = "week_monday_start")
     private String weekMondayStart;
-
-    @Column(name = "quarter_since_2005")
-    private String quarterSince2005;
-
-    @Column(name = "quarter_of_year")
-    private int quarterOfYear;
 
     @Column(name = "holiday")
     private String holiday;

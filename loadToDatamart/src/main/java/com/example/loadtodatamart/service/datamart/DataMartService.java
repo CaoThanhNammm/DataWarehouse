@@ -95,8 +95,12 @@ public class DataMartService {
             return;
         } catch (Exception e) {
             System.out.println("Error loading data: " + e.getMessage());
-            controlLogService.updateLogToFailed(runningLog.getId());
+//            controlLogService.updateLogToFailed(runningLog.getId());
             return;
         }
     }
+    public boolean isDataLoaded() {
+        return isDataLoaded;
+    }
+
 }

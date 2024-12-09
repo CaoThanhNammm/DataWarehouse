@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -24,10 +25,10 @@ public class Product {
     private String name;
 
     @Column(name = "price")
-    private String price;
+    private BigDecimal price;
 
-    @Column(name = "price_sale")
-    private String priceSale;
+    @Column(name = "priceSale")
+    private BigDecimal priceSale;
 
     @Column(name = "brand")
     private String brand;
@@ -53,11 +54,11 @@ public class Product {
     @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime createdAt;
 
-    @Column(name = "is_delete", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(columnDefinition = "BOOLEAN DEFAULT FALSE")
     private Boolean isDelete;
 
-    @Column(name = "date_delete")
-    private LocalDate dateDelete;
+    @Column(name = "date_delete", columnDefinition = "TIMESTAMP DEFAULT NULL")
+    private LocalDateTime dateDelete;
 
     @Column(name = "date_insert", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime dateInsert;

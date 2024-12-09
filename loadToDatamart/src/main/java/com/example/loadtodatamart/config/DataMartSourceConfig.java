@@ -59,7 +59,7 @@ public class DataMartSourceConfig {
 
         HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         vendorAdapter.setGenerateDdl(true); // Tạo ddl tự động
-        vendorAdapter.setShowSql(true); // Hiển thị SQL trong log (tùy chọn)
+        vendorAdapter.setShowSql(true);
 
         factoryBean.setJpaVendorAdapter(vendorAdapter);
         factoryBean.setPersistenceUnitName("datamartPU");
