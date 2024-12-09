@@ -16,6 +16,7 @@ const ProductStats = () => {
   const [totalProduct, setTotalProduct] = useState(0)
   const [countAvailableProduct, setCountAvailableProduct] = useState(0)
   const [countNotAvailableProduct, setCountNotAvailableProduct] = useState(0)
+  const [countNoStatusProduct, setCountNoStatusProduct] = useState(0)
   const fetchStats = async () => {
     try {
       const [highestPrice, lowestPrice] = await Promise.all([
@@ -46,6 +47,7 @@ const ProductStats = () => {
     try {
       const response = await axios.get("http://localhost:5000/total-products")
       const totalProductData = response?.data.total
+      console.log(totalProduct)
       setTotalProduct(totalProductData)
     } catch (error) {
       console.log(error)
@@ -74,10 +76,26 @@ const ProductStats = () => {
       console.log(err)
     }
   }
+  const fetchNoStatusProduct = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:5000/api/products/no-status"
+      )
+
+      const countNoStatusProductData =
+        response?.data[0]?.total_not_infor_product
+      console.log(countNoStatusProductData)
+      setCountNoStatusProduct(countNoStatusProductData)
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
   useEffect(() => {
     fetchTotalProduct()
     fetchAvailableProduct()
     fetchNotAvailableProduct()
+    fetchNoStatusProduct()
     fetchStats()
     fetchPriceRange()
   }, [])
@@ -108,6 +126,10 @@ const ProductStats = () => {
         <div className="flex gap-10 my-4">
           <p className="font-bold w-[30%]">Số sản phẩm hết hàng:</p>
           <p>{countNotAvailableProduct} sản phẩm</p>
+        </div>
+        <div className="flex gap-10 my-4">
+          <p className="font-bold w-[30%]">Số sản phẩm chưa có thông tin:</p>
+          <p>{countNoStatusProduct} sản phẩm</p>
         </div>
       </div>
       <div className="p-10 text-xl">
