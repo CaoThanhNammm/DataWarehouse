@@ -54,12 +54,12 @@ const LineChartComponent = () => {
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="priceRange" />
           <YAxis />
-          <Tooltip label="Giá" />
+          <Tooltip />
           <Legend />
           <Line
             type="monotone"
             dataKey="count"
-            name="Giá"
+            name="count"
             stroke="#8884d8"
             activeDot={{ r: 8 }}
           />
