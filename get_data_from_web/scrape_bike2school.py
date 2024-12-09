@@ -268,9 +268,9 @@ def get_data_detail_bike2school(hrefs):
                         "brand": brand,
                         "color": color.text,
                         "size": size,
-                        "description_part1": description_part1,
-                        "description_part2": description_part2,
-                        "description_part3": description_part3,
+                        "descriptionPart1": description_part1,
+                        "descriptionPart2": description_part2,
+                        "descriptionPart3": description_part3,
                         "timeStartScrape": timeStartScrape,
                         "timeEndScrape": timeEndScrape,
                         "status": status
@@ -306,9 +306,9 @@ def get_data_detail_bike2school(hrefs):
                         "brand": brand,
                         "color": color,
                         "size": size.text,
-                        "description_part1": description_part1,
-                        "description_part2": description_part2,
-                        "description_part3": description_part3,
+                        "descriptionPart1": description_part1,
+                        "descriptionPart2": description_part2,
+                        "descriptionPart3": description_part3,
                         "timeStartScrape": timeStartScrape,
                         "timeEndScrape": timeEndScrape,
                         "status": status
@@ -342,9 +342,9 @@ def get_data_detail_bike2school(hrefs):
                     "brand": brand,
                     "color": color,
                     "size": size,
-                    "description_part1": description_part1,
-                    "description_part2": description_part2,
-                    "description_part3": description_part3,
+                    "descriptionPart1": description_part1,
+                    "descriptionPart2": description_part2,
+                    "descriptionPart3": description_part3,
                     "timeStartScrape": timeStartScrape,
                     "timeEndScrape": timeEndScrape,
                     "status": status
@@ -392,7 +392,7 @@ def general_bike2school(url):
     logJson = {
         "message": API.get_message("startMessage"),
         "quantity": 0,
-        "timeStart": general.get_local_date_time(),
+        "timeStart": general.get_local_date(),
         "websiteId": {
             "id": id_website
         },
@@ -430,7 +430,7 @@ def general_bike2school(url):
     # kết thúc lấy dữ liệu------------------------------------------------------------------------------
 
     # thêm log hoàn thành hoặc thất bại sau khi lấy xong dữ liệu--------------------------------------------
-    timeEnd = general.get_local_date_time()
+    timeEnd = general.get_local_date()
 
     # nếu số lượng lớn hơn 0 thì lấy thành công
     if data.shape[0] > 0:

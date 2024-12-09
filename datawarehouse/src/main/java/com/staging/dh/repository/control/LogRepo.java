@@ -8,8 +8,10 @@ import com.staging.dh.model.control.Status;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
+
 @Repository
 public interface LogRepo extends JpaRepository<Log, Integer> {
 
-    boolean existsByWebsiteIdAndStatus(Config website, Status status);
+    boolean existsByWebsiteIdAndTimeStartAndStatus(Config website, LocalDate today, Status status);
 }

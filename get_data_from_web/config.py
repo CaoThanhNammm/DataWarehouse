@@ -38,6 +38,7 @@ def set_all_website_waiting():
                     StatusController.getStatusByName(f"{API.get_context_status()}/getStatusByName",
                                                      API.get_type_waiting())["id"]
             },
+            "timeStart": general.get_local_date(),
             'dateSk': {
                 'dateSk': dateSk
             }

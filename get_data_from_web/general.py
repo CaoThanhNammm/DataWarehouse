@@ -24,7 +24,7 @@ def get_local_date_time():
   return now.isoformat()
 
 def get_local_date():
-  now = date.today()
+  now =  date.today()
   return now.isoformat()
 
 def split_array_into_three(arr):

@@ -265,7 +265,7 @@ def general_xedapgiakho(url):
     logJson = {
         "message": API.get_message("startMessage"),
         "quantity": 0,
-        "timeStart": general.get_local_date_time(),
+        "timeStart": general.get_local_date(),
         "websiteId": {
             "id": id_website
         },
@@ -299,7 +299,7 @@ def general_xedapgiakho(url):
     # kết thúc lấy dữ liệu--------------------------------------------------------------------------------------------
 
     # thêm log hoàn thành hoặc thất bại sau khi lấy xong dữ liệu----------------------------------------------------------
-    timeEnd = general.get_local_date_time()
+    timeEnd = general.get_local_date()
 
     # nếu số lượng lớn hơn 0 thì lấy thành công
     if data.shape[0] > 0:

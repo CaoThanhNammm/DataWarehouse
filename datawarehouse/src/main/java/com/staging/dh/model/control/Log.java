@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -28,10 +29,10 @@ public class Log {
     private int quantity;
 
     @Column(name = "timeStart")
-    private LocalDateTime timeStart;
+    private LocalDate timeStart;
 
     @Column(name = "timeEnd")
-    private LocalDateTime timeEnd;
+    private LocalDate timeEnd;
 
     @ManyToOne
     @JoinColumn(name = "statusId")
