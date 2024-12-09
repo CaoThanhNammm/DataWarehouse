@@ -1,11 +1,16 @@
 package org.example.dw21130558_mxt.model.datawarehouse;
 import jakarta.persistence.*;
+import lombok.Getter;
+
 import java.time.LocalDate;
 
-@Entity
-@Table(name = "dateDim")
-public class DateDim {
 
+
+
+@Getter
+@Entity
+
+public class DateDim {
     @Id
     @Column(name = "date_sk")
     private int dateSk;
@@ -60,6 +65,4 @@ public class DateDim {
 
     @Column(name = "day_type")
     private String dayType;
-
-
 }

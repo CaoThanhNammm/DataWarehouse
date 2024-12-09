@@ -69,20 +69,20 @@
 
                 try {
                     // Thực thi stored procedure trong SQL để chuyển dữ liệu từ staging sang data warehouse
-//                    dwJdbcTemplate.execute("CALL LoadDataFromStagingToDW()");
+                  dwJdbcTemplate.execute("CALL LoadDataFromStagingToDW()");
 
                     // Đếm số lượng bản ghi đã được insert vào bảng trong DW (vd: bảng `product_dim`)
-//                    String countSql = "SELECT COUNT(*) FROM datawarehouse.productDim;";
-//                    int quantity = dwJdbcTemplate.queryForObject(countSql, Integer.class);
+                  String countSql = "SELECT COUNT(*) FROM datawarehouse.productDim;";
+                  int quantity = dwJdbcTemplate.queryForObject(countSql, Integer.class);
 
                     // Cập nhật log với trạng thái thành công và số lượng bản ghi
-//                    controlLogService.updateLogToSuccessful(runningLog.getId(), quantity);
+                   controlLogService.updateLogToSuccessful(runningLog.getId(), quantity);
 
                     String subject = "Quy trình load dữ liệu từ stg vào dw ngày hôm nay đã hoàn tất";
-//                    String body = "Quy trình load dữ liệu từ stg vào dw ngày hôm nay đã hoàn tất thành công. Số bản ghi insert vào dw là " + quantity + "\n\nTrân trọng,\nHệ thống";
-//                    emailService.sendEmail(recipient, subject, body);
+                 String body = "Quy trình load dữ liệu từ stg vào dw ngày hôm nay đã hoàn tất thành công. Số bản ghi insert vào dw là " + quantity + "\n\nTrân trọng,\nHệ thống";
+                   emailService.sendEmail(recipient, subject, body);
 
-//                    System.out.println("Data successfully loaded from Staging to DW with quantity: " + quantity);
+                   System.out.println("Data successfully loaded from Staging to DW with quantity: " + quantity);
                 } catch (Exception e) {
                     // Nếu có lỗi, cập nhật log với trạng thái thất bại và in ra thông báo lỗi
                     System.out.println("Error loading data: " + e.getMessage());

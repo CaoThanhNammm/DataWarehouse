@@ -1,20 +1,15 @@
-USE staging;
-DELIMITER //
+DELIMITER $$
 
 CREATE PROCEDURE LoadDataFromStagingToDW()
 BEGIN
 START TRANSACTION;
 
--- Xóa các bảng tạm nếu tồn tại
-DELETE FROM datawarehouse.productDim;
-DROP TEMPORARY TABLE IF EXISTS temp_update_products;
-    DROP TEMPORARY TABLE IF EXISTS temp_product;
-    DROP TEMPORARY TABLE IF EXISTS temp_ids;
 
-    -- Tạo bảng tạm lưu product (check trùng)
-    CREATE TEMPORARY TABLE temp_product AS
+
+-- Tạo bảng tạm lưu product (check trùng)
+CREATE TEMPORARY TABLE temp_product AS
 SELECT *,
-       TRIM(REPLACE(SUBSTRING_INDEX(color, ':', -1), '  ', ' ')) AS processed_color,
+       TRIM(REPLACE(color, ':', '')) AS processed_color,
        CAST(
                IFNULL(
                        NULLIF(
@@ -33,21 +28,16 @@ SELECT *,
                        '0'
                ) AS DECIMAL(15,2)
        ) AS processed_priceSale
-FROM (
-         SELECT *,
-                ROW_NUMBER() OVER (PARTITION BY name, id, color, size ORDER BY timeStartInsert DESC) AS row_num
-         FROM staging.bikes
-     ) AS temp
-WHERE row_num = 1;
+FROM staging.bikes;
 
 ALTER TABLE temp_product
     CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 
--- Chèn các sản phẩm mới vào productDim nếu chưa có (xử lí null -> N/A)
-INSERT INTO datawarehouse.productDim (
+-- Chèn các sản phẩm mới vào productdim nếu chưa có (xử lý null -> N/A)
+INSERT INTO datawarehouse.productdim (
     id, name, price, priceSale, brand, color, size, status,
     description_part1, description_part2, description_part3,
-    created_at, isDelete, date_insert, expired_date, dateSk
+    created_at, isDelete, date_insert, expired_date, date_sk
 )
 SELECT
     COALESCE(tp.id, 'N/A'),
@@ -65,12 +55,12 @@ SELECT
     FALSE,
     CURRENT_TIMESTAMP,
     '9999-12-31',
-    dd.dateSk  -- Lấy dateSk từ bảng dateDim
+    dd.dateSk  -- Lấy date_sk từ bảng date
 FROM temp_product tp
-         JOIN datewarehouse.dateDim dd ON dd.full_date = CURRENT_DATE
+         JOIN control.datedim dd ON dd.fullDate = CURRENT_DATE
 WHERE NOT EXISTS (
     SELECT 1
-    FROM datawarehouse.productDim pd
+    FROM datawarehouse.productdim pd
     WHERE
         pd.name = tp.name
       AND pd.id = tp.id
@@ -80,8 +70,7 @@ WHERE NOT EXISTS (
       AND pd.expired_date = '9999-12-31'
 );
 
--- Tạo bảng tạm để lưu các sản phẩm cần cập nhật ( chổ này có một số dữ liệu trùng id name color size nhưng khác des, có 2 cách, một là giữ nguyên bảng update chọn 1 trường, 2 là thêm vào partition 3 cái des ở all bảng tạm đi như này)
-
+-- Tạo bảng tạm để lưu các sản phẩm cần cập nhật
 CREATE TEMPORARY TABLE temp_update_products AS
 SELECT
     tp.*,
@@ -89,7 +78,7 @@ SELECT
 FROM staging.bikes tp
 WHERE EXISTS (
     SELECT 1
-    FROM datawarehouse.productDim pd2
+    FROM datawarehouse.productdim pd2
     WHERE
         pd2.id = tp.id
       AND pd2.name = tp.name
@@ -126,7 +115,7 @@ WHERE EXISTS (
 -- Bảng tạm chứa các ID sản phẩm cũ cần cập nhật
 CREATE TEMPORARY TABLE temp_ids AS
 SELECT pd2.product_sk
-FROM datawarehouse.productDim pd2
+FROM datawarehouse.productdim pd2
          JOIN temp_update_products tup
               ON tup.id = pd2.id
                   AND tup.name = pd2.name
@@ -136,18 +125,18 @@ WHERE pd2.isDelete = FALSE
   AND pd2.expired_date = '9999-12-31';
 
 -- Cập nhật trạng thái "đã xóa" đối với các sản phẩm cũ
-UPDATE datawarehouse.productDim pd
+UPDATE datawarehouse.productdim pd
 SET
     pd.isDelete = TRUE,
     pd.expired_date = CURRENT_DATE,
     pd.date_delete = CURRENT_DATE
 WHERE pd.product_sk IN (SELECT product_sk FROM temp_ids);
 
--- Chèn các sản phẩm mới vào productDim, kèm theo dateSk từ dateDim
-INSERT INTO datawarehouse.productDim (id,
-                                       name, price, priceSale, brand, color, size, status,
-                                       description_part1, description_part2, description_part3,
-                                       created_at, isDelete, date_insert, expired_date, dateSk
+-- Chèn các sản phẩm mới vào productdim
+INSERT INTO datawarehouse.productdim   (
+    id, name, price, priceSale, brand, color, size, status,
+    description_part1, description_part2, description_part3,
+    created_at, isDelete, date_insert, expired_date, date_sk
 )
 SELECT
     tp.id,
@@ -165,15 +154,12 @@ SELECT
     FALSE,
     CURRENT_TIMESTAMP,
     '9999-12-31',
-    dd.dateSk  -- Lấy dateSk từ bảng dateDim
+    dd.dateSk  -- Lấy date_sk từ bảng date
 FROM temp_update_products tp
-         JOIN datewarehouse.dateDim dd ON dd.full_date = CURRENT_DATE
+         JOIN control.datedim dd ON dd.fullDate = CURRENT_DATE
 WHERE tp.row_num = 1;  -- Chỉ lấy bản ghi mới nhất
 
 COMMIT;
-END //
-DELIMITER ;
+END$$
 
--- Gọi Procedure LoadDataFromStagingToDW
-CALL LoadDataFromStagingToDW();
-đây là PROCEDURE khi chuyển qua từ bikes và xử lí thẳng,,,tôi cần chuyển qua dim_bikes_raw và xử lí giá sang decimal trước, rồi tiếp tục xử lí chekc trùng qua dim_bikes_processed
+DELIMITER ;
