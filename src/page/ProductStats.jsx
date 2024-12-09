@@ -24,7 +24,7 @@ const ProductStats = () => {
       ])
       console.log(lowestPrice)
       setStats({
-        highestPrice: highestPrice?.data[0]?.price,
+        highestPrice: highestPrice?.data[0]?.maxPriceSale,
         lowestPrice: lowestPrice?.data[0]?.minPrice,
       })
     } catch (err) {
@@ -81,7 +81,18 @@ const ProductStats = () => {
     fetchStats()
     fetchPriceRange()
   }, [])
+  function formatCurrency(value) {
+    // Ép kiểu về số và đảm bảo giá trị đầu vào hợp lệ
+    if (typeof value !== "number") {
+      value = parseFloat(value)
+    }
+    if (isNaN(value)) {
+      return "Invalid number"
+    }
 
+    // Định dạng số với dấu '.' phân cách hàng nghìn
+    return value.toLocaleString("vi-VN") + " VND"
+  }
   return (
     <div>
       <div className="p-10 text-xl">
@@ -105,12 +116,12 @@ const ProductStats = () => {
         <div className="flex gap-10 my-4">
           <p className="font-bold w-[30%]">Giá cao nhất:</p>
 
-          <p>{stats.highestPrice} triệu VND</p>
+          <p>{formatCurrency(stats?.highestPrice)}</p>
         </div>
         <div className="flex gap-10 my-4">
           <p className="font-bold w-[30%]">Giá thấp nhất:</p>
 
-          <p>{stats.lowestPrice} triệu VND</p>
+          <p>{stats.lowestPrice} VND</p>
         </div>
         {priceRange?.map((item, index) => {
           return (

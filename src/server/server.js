@@ -59,6 +59,18 @@ const formatDate = (dateString) => {
   return `${day}/${month}/${year}`
 }
 app.get("/products", (req, res) => {
+  function formatCurrency(value) {
+    // Ép kiểu về số và đảm bảo giá trị đầu vào hợp lệ
+    if (typeof value !== "number") {
+      value = parseFloat(value)
+    }
+    if (isNaN(value)) {
+      return "Invalid number"
+    }
+
+    // Định dạng số với dấu '.' phân cách hàng nghìn
+    return value.toLocaleString("vi-VN", { minimumFractionDigits: 0 })
+  }
   const query = "SELECT * FROM product WHERE isDelete = 0"
 
   db.query(query, (err, results) => {
@@ -67,6 +79,9 @@ app.get("/products", (req, res) => {
     } else {
       // Chuyển đổi giá trị price từ chuỗi có dấu chấm và ký tự ₫ thành số
       results.forEach((product) => {
+        if (product.priceSale) {
+          product.priceSale = formatCurrency(product.priceSale)
+        }
         if (product.color) {
           product.color = product.color.replace(/^:/, "").trim()
         }
@@ -165,7 +180,7 @@ app.get("/api/stats/total", (req, res) => {
   })
 })
 app.get("/api/products/highest-price", (req, res) => {
-  const query = "SELECT * FROM product ORDER BY price DESC LIMIT 1"
+  const query = "SELECT MAX(priceSale) AS maxPriceSale FROM Product"
 
   db.query(query, (err, result) => {
     if (err) throw err
@@ -178,7 +193,8 @@ app.get("/api/products/highest-price", (req, res) => {
   })
 })
 app.get("/api/products/lowest-price", (req, res) => {
-  const query = "SELECT min(price) as minPrice FROM product WHERE price <> 0"
+  const query =
+    "SELECT min(priceSale) as minPrice FROM product WHERE priceSale <> 0 and isDelete = 0"
 
   db.query(query, (err, result) => {
     if (err) throw err
@@ -203,8 +219,8 @@ app.get("/api/products/price-range", (req, res) => {
   const query = `
          SELECT 
             CASE
-                WHEN price < 5 THEN 'Dưới 5 triệu'
-                WHEN price BETWEEN 5 AND 10 THEN 'Từ 5-10 triệu'
+                WHEN priceSale < 5000000 THEN 'Dưới 5 triệu'
+                WHEN priceSale BETWEEN 5000000 AND 10000000 THEN 'Từ 5-10 triệu'
                 ELSE 'Trên 10 triệu'
             END AS priceRange, 
             COUNT(*) AS count 
@@ -220,7 +236,7 @@ app.get("/api/products/price-range", (req, res) => {
   })
 })
 app.get("/average-price", (req, res) => {
-  const query = "SELECT AVG(price) AS average_price FROM product"
+  const query = "SELECT AVG(priceSale) AS average_price FROM product"
 
   db.query(query, (err, results) => {
     if (err) {

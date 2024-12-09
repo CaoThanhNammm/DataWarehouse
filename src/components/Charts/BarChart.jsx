@@ -28,8 +28,6 @@ const BarChartComponent = ({ highestPrice, lowestPrice }) => {
     getAveragePrice()
   }, [])
 
-  // eslint-disable-next-line react/prop-types
-
   return (
     <ResponsiveContainer width="100%" height={400}>
       <BarChart
@@ -50,15 +48,26 @@ const BarChartComponent = ({ highestPrice, lowestPrice }) => {
     </ResponsiveContainer>
   )
 }
-// eslint-disable-next-line react/prop-types
+
 const CustomTooltip = ({ active, payload, label }) => {
-  // eslint-disable-next-line react/prop-types
+  function formatCurrency(value) {
+    if (typeof value !== "number") {
+      value = parseFloat(value)
+    }
+    if (isNaN(value)) {
+      return "Invalid number"
+    }
+
+    // Định dạng số với dấu '.' phân cách hàng nghìn
+    return value.toLocaleString("vi-VN") + " VND"
+  }
+
   if (active && payload && payload?.length) {
     return (
       <div className="p-4 bg-slate-900 flex flex-col gap-4 rounded-md text-white">
         <p className="text-medium text-lg">{label}</p>
         <p className="text-sm font-bold text-blue-400">
-          Giá: <span className="ml-2">{payload[0].value} triệu VND</span>
+          Giá: <span className="ml-2">{formatCurrency(payload[0]?.value)}</span>
         </p>
       </div>
     )
