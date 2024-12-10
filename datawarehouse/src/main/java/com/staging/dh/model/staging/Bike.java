@@ -36,11 +36,11 @@ public class Bike {
     @Column
     private String size;
     @Column
-    private String description_part1;
+    private String descriptionPart1;
     @Column
-    private String description_part2;
+    private String descriptionPart2;
     @Column
-    private String description_part3;
+    private String descriptionPart3;
     @Column
     private String status;
     @Column

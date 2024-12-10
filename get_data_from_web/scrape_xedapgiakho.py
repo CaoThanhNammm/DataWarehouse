@@ -32,7 +32,7 @@ def get_page(url_home):
     # lấy ra div menu
     main_menu = driver.find_element(By.ID, 'menu-main-menu-new')
     # lấy ra tất cả thẻ a
-    nav_top_link = main_menu.find_elements(By.CLASS_NAME, 'nav-top-link')[:6]
+    nav_top_link = main_menu.find_elements(By.CLASS_NAME, 'nav-top-link')[:2]
     # lặp qua từng thẻ a và lấy ra href
     for item in nav_top_link:
         page = item.get_attribute("href")
@@ -78,7 +78,7 @@ def get_link_xedapgiakho(pages):
     hrefs = []
 
     # lặp qua từng loại
-    for page in pages:
+    for page in pages[:2]:
         # lấy ra danh sách url của tất cả số trang
         url_page_numbers = create_url_bike2school(page)
 
@@ -103,7 +103,7 @@ def get_link_xedapgiakho(pages):
 # tác dụng: lấy ra các thông tin như name, price, price_sale, ...
 # return: danh sách từng sản phẩm, lưu bằng DataFrame
 def get_data_detail_xedapgiakho(hrefs):
-    quantity_product = len(hrefs)
+    quantity_product = len(hrefs[:2])
     driver = general.config()
     print(hrefs)
     # lấy ra thời gian hiện tại
@@ -115,7 +115,7 @@ def get_data_detail_xedapgiakho(hrefs):
                  'descriptionPart3', 'status', 'timeStartScrape', 'timeEndScrape'])
     i = 1
     # lặp qua từng sản phẩm
-    for href in hrefs:
+    for href in hrefs[:2]:
         # vào trang chi tiết sản phẩm
         driver.get(href)
         # lấy ra tên

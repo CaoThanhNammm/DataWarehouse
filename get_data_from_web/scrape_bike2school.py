@@ -13,8 +13,6 @@
         - kết hợp tất cả 1, 2, 3, 4 lại thành 1 phương thức duy nhất
 """
 import time
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 import pandas as pd
 import API
@@ -32,9 +30,8 @@ def get_page_of_bike(url):
 
     # lấy ra container chứa các loại của xe đạp
     container = driver.find_elements(By.CLASS_NAME, "container")
-    time.sleep(1)
-    type_of_bike = container[1].find_elements(By.CLASS_NAME, "top_categories_e")
-
+    time.sleep(3)
+    type_of_bike = container[1].find_elements(By.CLASS_NAME, "top_categories_e")[:2]
 
     pages = []
     # lặp qua từng thẻ a, lấy ra href
@@ -92,7 +89,7 @@ def get_hrefs_bike2school(urls):
     driver = general.config()
 
     # lặp qua từng số trang
-    for url in urls:
+    for url in urls[:2]:
         try:
             print(url)
             # vào số trang
