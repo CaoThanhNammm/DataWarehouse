@@ -66,8 +66,10 @@ public class ProductDim {
     @Column(name = "isDelete")
     private Boolean isDelete = false;
 
-    // Quan hệ Many-to-One với bảng DateDim
+
+
     @ManyToOne
-    @JoinColumn(name = "date_sk", referencedColumnName = "date_sk") // Chỉ rõ cột "date_sk" là khóa ngoại
-    private DateDim dateDim;
+    @JoinColumn(name = "date_sk", referencedColumnName = "date_sk")
+    private DateDim dateSk;
+
 }

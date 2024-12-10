@@ -37,16 +37,16 @@ public class DatawarehouseSourceConfig {
                 .build();
     }
 
-    @Bean(name = "dwJdbcTemplate")
+    @Bean(name = "stJdbcTemplate")
     public JdbcTemplate dwJdbcTemplate(@Qualifier("stDataSource") DataSource dataSource) {
         return new JdbcTemplate(dataSource);
     }
 
-    @Bean(name = "dmJdbcTemplate")
+    @Bean(name = "dwJdbcTemplate")
     public JdbcTemplate dmJdbcTemplate(@Qualifier("dwDataSource") DataSource dataSource) {
         return new JdbcTemplate(dataSource);
     }
-    // Cấu hình EntityManagerFactory cho datamart
+    // Cấu hình EntityManagerFactory cho dw
     @Bean(name = "dwEntityManagerFactory")
     public LocalContainerEntityManagerFactoryBean dmEntityManagerFactory(
             @Qualifier("dwDataSource") DataSource dataSource) {
@@ -64,7 +64,7 @@ public class DatawarehouseSourceConfig {
         return factoryBean;
     }
 
-    // Cấu hình TransactionManager cho datamart (Sửa để sử dụng JpaTransactionManager thay vì JtaTransactionManager)
+    // Cấu hình TransactionManager cho dw(Sửa để sử dụng JpaTransactionManager thay vì JtaTransactionManager)
     @Bean(name = "dwTransactionManager")
     public PlatformTransactionManager dmTransactionManager(
             @Qualifier("dwEntityManagerFactory") EntityManagerFactory entityManagerFactory) {
